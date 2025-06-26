@@ -53,7 +53,7 @@ export default function HeroSection() {
           <div className="relative animate-fade-in-right">
             <div className="relative mx-auto w-80 h-96 bg-gradient-to-br from-[#00A733]/20 to-[#00A733]/5 rounded-3xl p-8 flex items-center justify-center animate-float">
               <Image
-                src="/placeholder.svg?height=400&width=200"
+                src="/heroimage.png?height=400&width=200"
                 alt="CarePoint Mobile App Mockup"
                 width={200}
                 height={400}
