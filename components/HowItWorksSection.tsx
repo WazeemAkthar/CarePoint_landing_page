@@ -157,7 +157,7 @@ export default function HowItWorksSection(): JSX.Element {
                 {/* Arrow for desktop - horizontal */}
                 {!isLastStep && (
                   <motion.div 
-                    className="absolute top-10 left-full transform -translate-x-1/2 translate-x-4 md:translate-x-6 lg:translate-x-8 xl:translate-x-12 hidden md:block z-10"
+                    className="absolute top-10 left-full transform -translate-x-1/2 md:translate-x-6 lg:translate-x-8 xl:translate-x-12 hidden md:block z-10"
                     variants={arrowVariants}
                   >
                     <motion.div
