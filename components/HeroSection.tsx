@@ -273,7 +273,7 @@ const HeroSection: React.FC = () => {
               >
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#00A733] to-[#4C9F4D] hover:from-[#4C9F4D] hover:to-[#00A733] text-white px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-[10px] hover:shadow-2xl hover:shadow-[#E5F2E5]/50 group w-full sm:w-auto"
+                  className="bg-gradient-to-r from-[#00A733] to-[#4C9F4D] hover:from-[#4C9F4D] hover:to-[#00A733] text-white px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl hover:shadow-2xl hover:shadow-[#E5F2E5]/50 group w-full sm:w-auto"
                 >
                   <span className="text-base md:text-lg font-semibold">
                     Download App
@@ -294,7 +294,7 @@ const HeroSection: React.FC = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-[10px] backdrop-blur-sm w-full sm:w-auto"
+                  className="border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl backdrop-blur-sm w-full sm:w-auto"
                 >
                   <span className="text-base md:text-lg font-medium">
                     Watch Demo

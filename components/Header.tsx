@@ -2,6 +2,7 @@ import React, { JSX } from 'react';
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Menu, X } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface NavigationItem {
   label: string;
@@ -45,7 +46,13 @@ export default function Header(): JSX.Element {
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-[#00A733] to-[#00D63F] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25 dark:shadow-green-400/20">
-                  <Stethoscope className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                  {/* <Stethoscope className="w-5 h-5 lg:w-6 lg:h-6 text-white" /> */}
+                  <Image
+                    alt="CarePoint Logo"
+                    width={24}
+                    height={24}
+                  className="w-5 h-5 lg:w-6 lg:h-6 text-white"
+                    src="/logo.png"/>
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
               </div>
