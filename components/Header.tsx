@@ -2,7 +2,6 @@ import React, { JSX } from 'react';
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { ThemeSelector } from './ThemeSelector';
 
 interface NavigationItem {
   label: string;
@@ -79,16 +78,16 @@ export default function Header(): JSX.Element {
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center space-x-4">
               {/* Theme Selector */}
-              <ThemeSelector position="right" size="sm" />
               
-              <Button className="bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold px-6 py-2.5 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 transition-all duration-200">
+              
+              <Button className="bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold px-6 py-2.5 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 transition-all duration-200 rounded-[10px]">
                 Download App
               </Button>
             </div>
 
             {/* Mobile Menu Button & Theme Toggle */}
             <div className="flex items-center space-x-2 lg:hidden">
-              <ThemeSelector position="right" size="sm" />
+              
               
               <Button
                 variant="ghost"
