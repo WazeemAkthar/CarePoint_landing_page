@@ -70,7 +70,7 @@ export default function Header(): JSX.Element {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="relative text-gray-600 dark:text-gray-300 hover:text-[#00A733] dark:hover:text-[#00D63F] transition-all duration-300 cursor-pointer group font-medium"
+                  className="relative uppercase text-gray-600 dark:text-gray-300 hover:text-[#00A733] dark:hover:text-[#00D63F] transition-all duration-300 cursor-pointer group font-medium"
                   onClick={(e) => {
                     e.preventDefault();
                     scrollToSection(item.id);
@@ -125,7 +125,7 @@ export default function Header(): JSX.Element {
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="block text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-[#00A733] dark:hover:text-[#00D63F] transition-colors py-2 border-b border-gray-100 dark:border-gray-800"
+                  className="block text-lg uppercase font-medium text-gray-700 dark:text-gray-300 hover:text-[#00A733] dark:hover:text-[#00D63F] transition-colors py-2 border-b border-gray-100 dark:border-gray-800"
                   onClick={(e) => {
                     e.preventDefault();
                     scrollToSection(item.id);
