@@ -12,6 +12,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
+import HeroMockupCarousel from './HeroMockupCarousel'
 
 // TypeScript interfaces
 interface ButtonProps {
@@ -390,21 +391,7 @@ const HeroSection: React.FC = () => {
                 transition={{ duration: 2, repeat: Infinity }}
               />
 
-              <motion.div
-                className="md:w-[200px] md:h-[400px] lg:w-[220px] lg:h-[450px] w-40 h-80 bg-gradient-to-br from-slate-200 to-slate-300 rounded-xl md:rounded-[2rem] shadow-xl md:shadow-2xl shadow-slate-900/20 relative z-10 flex items-center justify-center text-slate-700 font-semibold"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.5, duration: 0.8 }}
-              >
-                <Image
-                  src="/heroimage.png"
-                  alt="CarePoint Mobile App Mockup"
-                  width={160}
-                  height={320}
-                  className="md:w-[200px] md:h-[400px] lg:w-[220px] lg:h-[450px] rounded-xl md:rounded-[2rem] shadow-xl md:shadow-2xl shadow-slate-900/20 relative z-10"
-                  priority
-                />
-              </motion.div>
+             <HeroMockupCarousel />
 
               {/* Premium Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10 rounded-2xl md:rounded-[3rem] pointer-events-none"></div>
