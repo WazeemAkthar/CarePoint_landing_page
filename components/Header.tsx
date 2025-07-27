@@ -14,7 +14,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { label: 'How It Works', id: 'how-it-works' },
   { label: 'Reviews', id: 'testimonials' },
 //   { label: 'Pricing', id: 'pricing' },
-//   { label: 'Contact', id: 'contact' }
+  { label: 'Contact', id: 'contact' },
 ];
 
 export default function Header(): JSX.Element {
