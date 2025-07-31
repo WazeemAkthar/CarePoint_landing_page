@@ -122,6 +122,7 @@ export default function Header(): JSX.Element {
           isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
         }`}>
           <div className="w-full h-screen mx-auto px-4 py-6 space-y-6">
+            
             {/* Mobile Navigation Links */}
             <nav className="space-y-4">
               {NAVIGATION_ITEMS.map((item) => (
