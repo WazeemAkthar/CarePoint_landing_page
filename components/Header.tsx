@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Stethoscope, Menu, X } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { FaFacebookF, FaTwitter, FaInstagram} from "react-icons/fa";
+
+
 
 interface NavigationItem {
   label: string;
@@ -14,7 +17,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { label: 'How It Works', id: 'how-it-works' },
   { label: 'Reviews', id: 'testimonials' },
 //   { label: 'Pricing', id: 'pricing' },
-//   { label: 'Contact', id: 'contact' }
+  { label: 'Contact us', id: 'contact-us' },
 ];
 
 export default function Header(): JSX.Element {
@@ -118,7 +121,8 @@ export default function Header(): JSX.Element {
         <div className={`lg:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50 transform transition-all duration-300 ${
           isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
         }`}>
-          <div className="container mx-auto px-4 py-6 space-y-6">
+          <div className="w-full h-screen mx-auto px-4 py-6 space-y-6">
+            
             {/* Mobile Navigation Links */}
             <nav className="space-y-4">
               {NAVIGATION_ITEMS.map((item) => (
@@ -142,6 +146,12 @@ export default function Header(): JSX.Element {
                 Download App
               </Button>
             </div>
+            {/* Social Media Icons */}
+             <div className="flex justify-center space-x-6 pt-2 text-gray-600 dark:text-gray-300 text-2xl">
+                <a href="#"><FaFacebookF /></a>
+                <a href="#"><FaTwitter /></a>
+                <a href="#"><FaInstagram /></a>
+              </div>
           </div>
         </div>
       </header>
