@@ -127,7 +127,7 @@ export default function ContactUs() {
                <div>
                   <label className="block text-sm font-medium mb-1">Message</label>
                   <textarea
-                    rows="4"
+                    rows={4}
                     placeholder="Tell us how we can help you..."
                     className="w-full px-4 py-2 border-2 border-gray-300 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                   ></textarea>
