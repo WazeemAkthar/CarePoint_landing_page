@@ -4,6 +4,7 @@ import { Stethoscope, Menu, X } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import { FaFacebookF, FaTwitter, FaInstagram} from "react-icons/fa";
+import Link from "next/link";
 
 
 
@@ -88,8 +89,11 @@ export default function Header(): JSX.Element {
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center space-x-4">
               {/* Theme Selector */}
-              
-              
+              <Link href="/login">
+               <Button className="bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold px-6 py-2.5 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 transition-all duration-200 rounded-[10px]">
+                Book Appointment
+              </Button>
+              </Link>
               <Button className="bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold px-6 py-2.5 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 transition-all duration-200 rounded-[10px]">
                 Download App
               </Button>
@@ -145,6 +149,11 @@ export default function Header(): JSX.Element {
               <Button className="w-full bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold py-3 rounded-xl transform hover:scale-[1.02] transition-all duration-200">
                 Download App
               </Button>
+<Link href="/login">
+              <Button className="w-full bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold py-3 rounded-xl transform hover:scale-[1.02] transition-all duration-200">
+                Book Appointment
+              </Button>
+              </Link>
             </div>
             {/* Social Media Icons */}
              <div className="flex justify-center space-x-6 pt-2 text-gray-600 dark:text-gray-300 text-2xl">

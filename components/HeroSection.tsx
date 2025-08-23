@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import HeroMockupCarousel from './HeroMockupCarousel'
+import Link from "next/link";
 
 // TypeScript interfaces
 interface ButtonProps {
@@ -272,12 +273,14 @@ const HeroSection: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
+                <Link href="/login">
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-[#00A733] to-[#4C9F4D] hover:from-[#4C9F4D] hover:to-[#00A733] text-white px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl hover:shadow-2xl hover:shadow-[#E5F2E5]/50 group w-full sm:w-auto"
                 >
                   <span className="text-base md:text-lg font-semibold">
-                    Download App
+                    {/* Download App */}
+                    Book a Doctor
                   </span>
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
@@ -286,6 +289,7 @@ const HeroSection: React.FC = () => {
                     <ArrowRight className="ml-2 md:ml-3 w-5 h-5 md:w-6 md:h-6" />
                   </motion.div>
                 </Button>
+                </Link>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.02, y: -2 }}

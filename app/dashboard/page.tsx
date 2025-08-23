@@ -1,55 +1,137 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import HospitalCard from "@/components/hospitalcard";
+import { Hospital, User, Specialty } from "@/types/hospital";
 
-export default function Dashboard() {
+const Dashboard: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState<{ fullName?: string } | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Cardiology");
+  const [user, setUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty>("Cardiology");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const specialties = ["Cardiology", "Neurology", "Pediatrics", "Orthopedics"];
+  const specialties: Specialty[] = ["Cardiology", "Neurology", "Pediatrics", "Orthopedics"];
   
-  const hospitals = [
+  const hospitals: Hospital[] = [
     {
       id: 1,
-      name: "Central Medical Hospital",
-      location: "Negombo, Western Province",
+      name: "National Hospital of Sri Lanka",
+      location: "Colombo, Western Province",
       rating: 4.5,
       specialty: "Cardiology",
-      image: "/api/placeholder/300/200"
+      phone: "+94-11-2691111",
+      isEmergencyAvailable: true
     },
     {
       id: 2,
-      name: "Sunrise Healthcare Center",
+      name: "Asiri Central Hospital",
       location: "Colombo, Western Province",
-      rating: 4.3,
+      rating: 4.7,
       specialty: "Cardiology",
-      image: "/api/placeholder/300/200"
+      phone: "+94-11-4665500",
+      isEmergencyAvailable: true
     },
     {
       id: 3,
-      name: "Metro General Hospital",
-      location: "Gampaha, Western Province",
+      name: "Nawaloka Hospitals",
+      location: "Colombo, Western Province",
       rating: 4.6,
       specialty: "Cardiology",
-      image: "/api/placeholder/300/200"
+      phone: "+94-11-2577777",
+      isEmergencyAvailable: true
+    },
+    {
+      id: 4,
+      name: "Lanka Hospitals",
+      location: "Colombo, Western Province",
+      rating: 4.4,
+      specialty: "Cardiology",
+      phone: "+94-11-5430000",
+      isEmergencyAvailable: true
+    },
+    {
+      id: 5,
+      name: "Durdans Hospital",
+      location: "Colombo, Western Province",
+      rating: 4.8,
+      specialty: "Cardiology",
+      phone: "+94-11-2140000",
+      isEmergencyAvailable: true
+    },
+    {
+      id: 6,
+      name: "Apollo Hospitals",
+      location: "Colombo, Western Province",
+      rating: 4.5,
+      specialty: "Cardiology",
+      phone: "+94-11-5430000",
+      isEmergencyAvailable: true
+    },
+    {
+      id: 7,
+      name: "Hemas Hospital",
+      location: "Wattala, Western Province",
+      rating: 4.3,
+      specialty: "Cardiology",
+      phone: "+94-11-2952000",
+      isEmergencyAvailable: false
     }
   ];
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/login");
-    }
+    const initializeUser = () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser: User = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } else {
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        router.push("/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeUser();
   }, [router]);
 
-  const filteredHospitals = hospitals.filter(hospital => 
+  const handleLogout = (): void => {
+    try {
+      localStorage.removeItem("user");
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Force navigation even if localStorage fails
+      router.push("/login");
+    }
+  };
+
+  const handleHospitalViewDetails = (hospital: Hospital): void => {
+    console.log("View details for:", hospital);
+    // Navigate to hospital details page
+    // router.push(`/hospital/${hospital.id}`);
+  };
+
+  const filteredHospitals = hospitals.filter((hospital: Hospital) => 
     hospital.specialty === selectedSpecialty &&
     hospital.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,16 +146,14 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                localStorage.removeItem("user");
-                router.push("/login");
-              }}
-              className="text-sm text-red-500 font-medium hover:text-red-600"
+              onClick={handleLogout}
+              className="text-sm text-red-500 font-medium hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded px-2 py-1"
+              aria-label="Logout"
             >
               Logout
             </button>
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-gray-600 text-sm">👤</span>
+              <span className="text-gray-600 text-sm" role="img" aria-label="User avatar">👤</span>
             </div>
           </div>
         </div>
@@ -89,8 +169,9 @@ export default function Dashboard() {
             type="text"
             placeholder="Search hospitals..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm transition-all"
+            aria-label="Search hospitals"
           />
         </div>
 
@@ -98,15 +179,16 @@ export default function Dashboard() {
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Specialties</h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {specialties.map((specialty) => (
+            {specialties.map((specialty: Specialty) => (
               <button
                 key={specialty}
                 onClick={() => setSelectedSpecialty(specialty)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 ${
                   selectedSpecialty === specialty
                     ? "bg-green-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
+                aria-pressed={selectedSpecialty === specialty}
               >
                 {specialty}
               </button>
@@ -118,69 +200,57 @@ export default function Dashboard() {
       {/* Hospital Results */}
       <div className="px-4 sm:px-6 pb-20">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {filteredHospitals.length} Hospitals Found
+          {filteredHospitals.length} Hospital{filteredHospitals.length !== 1 ? 's' : ''} Found
         </h2>
         
-        <div className="space-y-4">
-          {filteredHospitals.map((hospital) => (
-            <div key={hospital.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="aspect-video bg-gradient-to-br from-green-100 to-blue-100 relative">
-                {/* Hospital room illustration */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-24 h-16 bg-white rounded-lg shadow-md relative">
-                    <div className="absolute top-2 left-2 w-4 h-2 bg-green-400 rounded-full"></div>
-                    <div className="absolute bottom-2 right-2 w-6 h-3 bg-blue-400 rounded"></div>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full shadow-sm">
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500 text-sm">⭐</span>
-                    <span className="text-sm font-medium text-gray-700">{hospital.rating}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 text-lg mb-2">{hospital.name}</h3>
-                <div className="flex items-center gap-1 mb-3">
-                  <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-600">{hospital.location}</span>
-                </div>
-                <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full">
-                  {hospital.specialty}
-                </span>
-              </div>
+        {filteredHospitals.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No hospitals found</h3>
+            <p className="text-gray-600">Try adjusting your search or specialty filter.</p>
+          </div>
+        ) : (
+          /* Vertical Hospital Cards */
+          <div className="space-y-0">
+            {filteredHospitals.map((hospital: Hospital) => (
+              <HospitalCard 
+                key={hospital.id} 
+                hospital={hospital} 
+                onViewDetails={handleHospitalViewDetails}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
         <div className="flex justify-around py-3">
-          <button className="flex flex-col items-center gap-1 text-green-600">
+          <button className="flex flex-col items-center gap-1 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded p-2">
             <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
-              <span className="text-white text-xs">🏥</span>
+              <span className="text-white text-xs" role="img" aria-label="Hospitals">🏥</span>
             </div>
             <span className="text-xs font-medium">Hospitals</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400">
+          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs">📅</span>
+              <span className="text-xs" role="img" aria-label="Appointments">📅</span>
             </div>
             <span className="text-xs">Appointments</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400">
+          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs">💡</span>
+              <span className="text-xs" role="img" aria-label="Health Tips">💡</span>
             </div>
             <span className="text-xs">Health Tips</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400">
+          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs">👤</span>
+              <span className="text-xs" role="img" aria-label="Profile">👤</span>
             </div>
             <span className="text-xs">Profile</span>
           </button>
@@ -188,4 +258,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

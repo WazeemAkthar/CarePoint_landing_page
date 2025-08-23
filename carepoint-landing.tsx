@@ -8,12 +8,14 @@ import TestimonialsSection from "@/components/TestimonialsSection"
 import ContactUs from '@/components/ContactUs';
 import CTASection from "@/components/CTASection"
 import Footer from "@/components/Footer"
+import HospitalCard from "@/components/hospitalcard"
 
 export default function CarePointLanding() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <HeroSection />
+      <HospitalCard hospital={{} as any} />
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
