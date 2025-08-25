@@ -1,13 +1,15 @@
 // components/BottomNavigation.tsx
 "use client";
 import React from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Calendar, Hospital, Heart, User } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 type NavItem = {
   id: string;
   label: string;
-  icon: string;
-  isActive?: boolean;
-  onClick?: () => void;
+  icon: LucideIcon;
+  path: string;
 };
 
 interface BottomNavigationProps {
@@ -16,74 +18,85 @@ interface BottomNavigationProps {
 }
 
 const BottomNavigation: React.FC<BottomNavigationProps> = ({
-  activeTab = "hospitals",
+  activeTab,
   onTabChange
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const navItems: NavItem[] = [
     {
       id: "hospitals",
       label: "Hospitals",
-      icon: "🏥",
-      isActive: activeTab === "hospitals"
+      icon: Hospital,
+      path: "/dashboard"
     },
     {
       id: "appointments",
       label: "Appointments",
-      icon: "📅",
-      isActive: activeTab === "appointments"
+      icon: Calendar,
+      path: "/appointments"
     },
     {
       id: "health-tips",
       label: "Health Tips",
-      icon: "💡",
-      isActive: activeTab === "health-tips"
+      icon: Heart,
+      path: "/health-tips"
     },
     {
       id: "profile",
       label: "Profile",
-      icon: "👤",
-      isActive: activeTab === "profile"
+      icon: User,
+      path: "/profile"
     }
   ];
 
-  const handleTabClick = (tabId: string) => {
-    onTabChange?.(tabId);
+  const handleTabClick = (item: NavItem) => {
+    // Call the onTabChange callback if provided
+    onTabChange?.(item.id);
+    
+    // Navigate to the page
+    router.push(item.path);
+  };
+
+  const isActiveTab = (item: NavItem): boolean => {
+    // If activeTab prop is provided, use it
+    if (activeTab) {
+      return activeTab === item.id;
+    }
+    
+    // Otherwise, determine active state based on current pathname
+    return pathname === item.path;
   };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb z-50">
-      <div className="flex justify-around py-3">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => handleTabClick(item.id)}
-            className={`flex flex-col items-center gap-1 focus:outline-none focus:ring-2 focus:ring-opacity-50 rounded p-2 transition-colors ${
-              item.isActive
-                ? "text-green-600 focus:ring-green-500"
-                : "text-gray-400 hover:text-gray-600 focus:ring-gray-500"
-            }`}
-            aria-pressed={item.isActive}
-          >
-            <div
-              className={`w-6 h-6 flex items-center justify-center rounded ${
-                item.isActive ? "bg-green-600" : ""
+      <div className="flex justify-around py-2">
+        {navItems.map((item) => {
+          const IconComponent = item.icon;
+          const isActive = isActiveTab(item);
+          
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleTabClick(item)}
+              className={`flex flex-col items-center py-2 px-4 transition-colors focus:outline-none focus:ring-2 focus:ring-opacity-50 rounded-md ${
+                isActive
+                  ? "text-green-500 focus:ring-green-500"
+                  : "text-gray-500 hover:text-gray-700 focus:ring-gray-500"
               }`}
+              aria-pressed={isActive}
+              aria-label={`Navigate to ${item.label}`}
             >
-              <span
-                className={`text-xs ${
-                  item.isActive ? "text-white" : ""
-                }`}
-                role="img"
-                aria-label={item.label}
-              >
-                {item.icon}
+              <IconComponent 
+                className={`w-6 h-6 ${isActive ? 'text-green-500' : 'text-gray-500'}`} 
+              />
+              <span className={`text-xs mt-1 ${isActive ? "font-medium text-green-500" : "text-gray-500"}`}>
+                {item.label}
               </span>
-            </div>
-            <span className={`text-xs ${item.isActive ? "font-medium" : ""}`}>
-              {item.label}
-            </span>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
