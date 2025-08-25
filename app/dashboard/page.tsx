@@ -190,7 +190,7 @@ const Dashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-3">
             Specialties
           </h2>
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-3 overflow-x-auto  [&::-webkit-scrollbar]:hidden p-2">
             {specialties.map((specialty: Specialty) => (
               <button
                 key={specialty}
