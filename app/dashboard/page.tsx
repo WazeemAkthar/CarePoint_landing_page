@@ -2,15 +2,23 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import HospitalCard from "@/components/hospitalcard";
-import { Hospital, User, Specialty } from "@/types/hospital";
+import HospitalDetail from "@/components/HospitalDetail";
+import DoctorProfile from "@/components/DoctorProfile";
+import BottomNavigation from "@/components/BottomNavigation";
+import { Hospital, User, Specialty, Doctor, hospitalsData } from "@/types/hospital";
+
+type ViewState = "dashboard" | "hospital-detail" | "doctor-profile";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedSpecialty, setSelectedSpecialty] =
-    useState<Specialty>("Cardiology");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty>("Cardiology");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentView, setCurrentView] = useState<ViewState>("dashboard");
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("hospitals");
 
   const specialties: Specialty[] = [
     "Cardiology",
@@ -19,84 +27,22 @@ const Dashboard: React.FC = () => {
     "Orthopedics",
   ];
 
-  const hospitals: Hospital[] = [
-    {
-      id: 1,
-      name: "National Hospital of Sri Lanka",
-      location: "Colombo, Western Province",
-      rating: 4.5,
-      specialty: "Cardiology",
-      phone: "+94-11-2691111",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 2,
-      name: "Asiri Central Hospital",
-      location: "Colombo, Western Province",
-      rating: 4.7,
-      specialty: "Cardiology",
-      phone: "+94-11-4665500",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 3,
-      name: "Nawaloka Hospitals",
-      location: "Colombo, Western Province",
-      rating: 4.6,
-      specialty: "Cardiology",
-      phone: "+94-11-2577777",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 4,
-      name: "Lanka Hospitals",
-      location: "Colombo, Western Province",
-      rating: 4.4,
-      specialty: "Cardiology",
-      phone: "+94-11-5430000",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 5,
-      name: "Durdans Hospital",
-      location: "Colombo, Western Province",
-      rating: 4.8,
-      specialty: "Cardiology",
-      phone: "+94-11-2140000",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 6,
-      name: "Apollo Hospitals",
-      location: "Colombo, Western Province",
-      rating: 4.5,
-      specialty: "Cardiology",
-      phone: "+94-11-5430000",
-      isEmergencyAvailable: true,
-    },
-    {
-      id: 7,
-      name: "Hemas Hospital",
-      location: "Wattala, Western Province",
-      rating: 4.3,
-      specialty: "Cardiology",
-      phone: "+94-11-2952000",
-      isEmergencyAvailable: false,
-    },
-  ];
+  // Use the imported mock data
+  const hospitals: Hospital[] = hospitalsData;
 
   useEffect(() => {
     const initializeUser = () => {
       try {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          const parsedUser: User = JSON.parse(storedUser);
-          setUser(parsedUser);
-        } else {
-          router.push("/login");
-        }
+        // Since we can't use localStorage, we'll create a mock user
+        const mockUser: User = {
+          id: 1,
+          fullName: "John Doe",
+          email: "john.doe@email.com",
+          phone: "+94-77-1234567"
+        };
+        setUser(mockUser);
       } catch (error) {
-        console.error("Error parsing user data:", error);
+        console.error("Error setting user data:", error);
         router.push("/login");
       } finally {
         setIsLoading(false);
@@ -108,24 +54,37 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = (): void => {
     try {
-      localStorage.removeItem("user");
+      // Clear user data and navigate to login
+      setUser(null);
       router.push("/login");
     } catch (error) {
       console.error("Error during logout:", error);
-      // Force navigation even if localStorage fails
       router.push("/login");
     }
   };
 
   const handleHospitalViewDetails = (hospital: Hospital): void => {
-    console.log("View details for:", hospital);
-    // Navigate to hospital details page
-    // router.push(`/hospital/${hospital.id}`);
+    setSelectedHospital(hospital);
+    setCurrentView("hospital-detail");
+  };
+
+  const handleDoctorSelect = (doctor: Doctor): void => {
+    setSelectedDoctor(doctor);
+    setCurrentView("doctor-profile");
+  };
+
+  const handleTabChange = (tabId: string): void => {
+    setActiveTab(tabId);
+    if (tabId === "hospitals") {
+      setCurrentView("dashboard");
+    }
+    // Handle other tab navigation here
+    console.log("Navigate to:", tabId);
   };
 
   const filteredHospitals = hospitals.filter(
     (hospital: Hospital) =>
-      hospital.specialty === selectedSpecialty &&
+      hospital.specialties.includes(selectedSpecialty) &&
       hospital.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -140,6 +99,30 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Render Hospital Detail View
+  if (currentView === "hospital-detail" && selectedHospital) {
+    return (
+      <HospitalDetail
+        hospital={selectedHospital}
+        onDoctorSelect={handleDoctorSelect}
+      />
+    );
+  }
+
+  // Render Doctor Profile View
+  if (currentView === "doctor-profile" && selectedDoctor && selectedHospital) {
+    return (
+      <DoctorProfile
+        doctor={selectedDoctor}
+        hospital={selectedHospital}
+        onBookAppointment={() => {
+          console.log("Book appointment for:", selectedDoctor.name);
+        }}
+      />
+    );
+  }
+
+  // Render Main Dashboard
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -263,10 +246,10 @@ const Dashboard: React.FC = () => {
             {filteredHospitals.map((hospital: Hospital) => (
               <div className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)] hover:cursor-pointer" key={hospital.id}>
                 <HospitalCard
-                  key={hospital.id}
-                  hospital={hospital}
-                  onViewDetails={handleHospitalViewDetails}
-                />
+                    key={hospital.id}
+                    hospital={hospital}
+                    onViewDetails={(h: any) => handleHospitalViewDetails(h as Hospital)}
+                  />
               </div>
             ))}
           </div>
@@ -274,46 +257,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
-        <div className="flex justify-around py-3">
-          <button className="flex flex-col items-center gap-1 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded p-2">
-            <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
-              <span
-                className="text-white text-xs"
-                role="img"
-                aria-label="Hospitals"
-              >
-                🏥
-              </span>
-            </div>
-            <span className="text-xs font-medium">Hospitals</span>
-          </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
-            <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs" role="img" aria-label="Appointments">
-                📅
-              </span>
-            </div>
-            <span className="text-xs">Appointments</span>
-          </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
-            <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs" role="img" aria-label="Health Tips">
-                💡
-              </span>
-            </div>
-            <span className="text-xs">Health Tips</span>
-          </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 rounded p-2">
-            <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-xs" role="img" aria-label="Profile">
-                👤
-              </span>
-            </div>
-            <span className="text-xs">Profile</span>
-          </button>
-        </div>
-      </div>
+      <BottomNavigation 
+        activeTab={activeTab} 
+        onTabChange={handleTabChange} 
+      />
     </div>
   );
 };
