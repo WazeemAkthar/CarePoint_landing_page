@@ -2,8 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+
 
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -102,17 +105,26 @@ const LoginPage = () => {
                 placeholder="Email address"
               />
             </div>
-            <div>
+            <div className="relative">
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={credentials.password}
                 onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm pr-10"
                 placeholder="Password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 focus:outline-none"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
             </div>
           </div>
 
