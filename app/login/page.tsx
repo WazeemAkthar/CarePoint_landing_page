@@ -12,35 +12,31 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Demo credentials for user login
-  const demoCredentials = {
-    email: "user@carepoint.com",
-    password: "user123",
-  };
+  // Import apiClient
+  // ...existing code...
+  const { apiClient } = require("../../lib/apiClient");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (
-      credentials.email === demoCredentials.email &&
-      credentials.password === demoCredentials.password
-    ) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: credentials.email,
-          isAuthenticated: true,
-        })
-      );
-      router.push("/dashboard"); // ✅ all users go to dashboard
-    } else {
-      setError("Invalid credentials. Please use the demo credentials provided.");
+    try {
+      // Use correct backend endpoint
+      const data = await apiClient.post("/auth/login", {
+        email: credentials.email,
+        password: credentials.password,
+      });
+      if (data && data.token && data.user) {
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Invalid credentials. Please try again.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error. Please try again later.");
     }
-
     setLoading(false);
   };
 
@@ -51,10 +47,11 @@ const LoginPage = () => {
     });
   };
 
+  // Optionally, you can keep this for demo/testing
   const fillDemoCredentials = () => {
     setCredentials({
-      email: demoCredentials.email,
-      password: demoCredentials.password,
+      email: "user@carepoint.com",
+      password: "user123",
     });
   };
 

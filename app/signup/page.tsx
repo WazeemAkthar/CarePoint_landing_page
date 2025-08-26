@@ -24,6 +24,9 @@ const SignUpPage = () => {
     });
   };
 
+  // Import apiClient
+  const { apiClient } = require("../../lib/apiClient");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -34,23 +37,28 @@ const SignUpPage = () => {
     }
 
     setLoading(true);
-
-    // Simulate signup (API call goes here)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Save user (mock)
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        fullName: formData.fullName,
+    try {
+      // Backend expects: username, email, password, phone, role
+      const payload = {
+        username: formData.fullName,
         email: formData.email,
+        password: formData.password,
         phone: formData.phone,
-        isAuthenticated: true,
-      })
-    );
-
-    setLoading(false);
-    router.push("/dashboard");
+        role: "user" // or let user select role if needed
+      };
+      const data = await apiClient.post("/auth/register", payload);
+      if (data.success && data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setLoading(false);
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Registration failed. Please try again.");
+        setLoading(false);
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error. Please try again later.");
+      setLoading(false);
+    }
   };
 
   return (

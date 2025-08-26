@@ -33,14 +33,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const initializeUser = () => {
       try {
-        // Since we can't use localStorage, we'll create a mock user
-        const mockUser: User = {
-          id: 1,
-          fullName: "John Doe",
-          email: "john.doe@email.com",
-          phone: "+94-77-1234567"
-        };
-        setUser(mockUser);
+        // Read user from localStorage (set on login/signup)
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          router.push("/login");
+        }
       } catch (error) {
         console.error("Error setting user data:", error);
         router.push("/login");
@@ -48,7 +47,6 @@ const Dashboard: React.FC = () => {
         setIsLoading(false);
       }
     };
-
     initializeUser();
   }, [router]);
 
@@ -130,7 +128,7 @@ const Dashboard: React.FC = () => {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">
-              Hello {user?.fullName || "User"}
+              Hello {user?.username}
             </h1>
             <p className="text-gray-600 text-base">
               Find the best hospital for you
