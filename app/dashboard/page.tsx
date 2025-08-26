@@ -5,7 +5,7 @@ import HospitalCard from "@/components/hospitalcard";
 import HospitalDetail from "@/components/HospitalDetail";
 import DoctorProfile from "@/components/DoctorProfile";
 import BottomNavigation from "@/components/BottomNavigation";
-import { Hospital, User, Specialty, Doctor, hospitalsData } from "@/types/hospital";
+import { Hospital, User, Specialty, Doctor } from "@/types/hospital";
 
 type ViewState = "dashboard" | "hospital-detail" | "doctor-profile";
 
@@ -20,18 +20,12 @@ const Dashboard: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [activeTab, setActiveTab] = useState<string>("hospitals");
 
-  const specialties: Specialty[] = [
-    "Cardiology",
-    "Neurology",
-    "Pediatrics",
-    "Orthopedics",
-  ];
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
 
-  // Use the imported mock data
-  const hospitals: Hospital[] = hospitalsData;
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   useEffect(() => {
-    const initializeUser = () => {
+    const fetchDashboardData = async () => {
       try {
         // Read user from localStorage (set on login/signup)
         const storedUser = localStorage.getItem("user");
@@ -39,16 +33,36 @@ const Dashboard: React.FC = () => {
           setUser(JSON.parse(storedUser));
         } else {
           router.push("/login");
+          return;
+        }
+        // Fetch hospitals from backend with specialty and limit
+        const { apiClient } = require("../../lib/apiClient");
+        const params = new URLSearchParams({
+          specialty: selectedSpecialty,
+          limit: "50"
+        });
+        const response = await apiClient.get(`/hospitals?${params.toString()}`);
+        if (response && response.hospitals) {
+          setHospitals(response.hospitals);
+          // Extract unique specialties from hospitals
+          const specialtySet = new Set<string>();
+          response.hospitals.forEach((hospital: Hospital) => {
+            hospital.specialties.forEach((spec: string) => specialtySet.add(spec));
+          });
+          setSpecialties(Array.from(specialtySet) as Specialty[]);
+        } else {
+          setHospitals([]);
+          setSpecialties([]);
         }
       } catch (error) {
-        console.error("Error setting user data:", error);
-        router.push("/login");
+        console.error("Error loading dashboard data:", error);
+        setHospitals([]);
       } finally {
         setIsLoading(false);
       }
     };
-    initializeUser();
-  }, [router]);
+    fetchDashboardData();
+  }, [router, selectedSpecialty]);
 
   const handleLogout = (): void => {
     try {

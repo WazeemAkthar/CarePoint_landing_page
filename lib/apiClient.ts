@@ -3,6 +3,14 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { API_BASE_URL } from '../app/config';
 
 class ApiClient {
+  async get<T>(url: string): Promise<T> {
+    try {
+      const response = await this.client.get<T>(url);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
   private client: AxiosInstance;
 
   constructor(baseURL: string) {

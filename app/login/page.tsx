@@ -133,13 +133,13 @@ const LoginPage = () => {
           </div>
 
           <div className="mt-6 text-center">
-            <button
+            {/* <button
               type="button"
               onClick={fillDemoCredentials}
               className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded border"
             >
               Fill Demo User Credentials
-            </button>
+            </button> */}
           </div>
 
           <div className="flex items-center justify-between mt-4">
