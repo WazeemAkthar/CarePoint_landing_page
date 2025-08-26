@@ -21,9 +21,22 @@ interface HospitalCardProps {
 }
 
 const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) => {
-  const handleViewDetails = () => {
+  const handleViewDetails = async () => {
     if (onViewDetails) {
-      onViewDetails(hospital);
+      try {
+        // Fetch full hospital details from backend using hospital.id
+        const { apiClient } = require("../lib/apiClient");
+        const response = await apiClient.get(`/hospitals/${hospital.id}`);
+        if (response && response.hospital) {
+          onViewDetails(response.hospital);
+        } else {
+          // fallback to current hospital if backend fails
+          onViewDetails(hospital);
+        }
+      } catch (error) {
+        // fallback to current hospital if error
+        onViewDetails(hospital);
+      }
     }
   };
 

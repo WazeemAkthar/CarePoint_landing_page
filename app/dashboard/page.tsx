@@ -76,8 +76,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleHospitalViewDetails = (hospital: Hospital): void => {
-    setSelectedHospital(hospital);
-    setCurrentView("hospital-detail");
+    router.push(`/Hospital/${hospital.id}`);
   };
 
   const handleDoctorSelect = (doctor: Doctor): void => {
