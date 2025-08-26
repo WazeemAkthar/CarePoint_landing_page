@@ -4,13 +4,14 @@ import React from 'react';
 export interface Hospital {
   id: number;
   name: string;
-address: {
+  address: {
     street: string;
     city: string;
     state: string;
     zipCode: string;
     country?: string;
-  };  rating: number;
+  };  
+  rating: number;
   specialty: string;
 }
 
@@ -69,7 +70,7 @@ const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) 
               clipRule="evenodd" 
             />
           </svg>
-          <span className="text-sm lg:text-xs text-gray-600 line-clamp-1">{hospital.address.city}, {hospital.address.state}</span>
+            <span className="text-sm lg:text-xs text-gray-600 line-clamp-1">{hospital.address?.city || "N/A"}, {hospital.address?.state || "N/A"}</span>
         </div>
         
         <div className="flex items-center justify-between">
