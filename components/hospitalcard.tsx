@@ -39,9 +39,10 @@ const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) 
       }
     }
   };
+  console.log("Rendering HospitalCard for:", hospital);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow w-full max-w-sm mx-auto lg:mx-0">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow w-full max-w-sm mx-auto lg:mx-0" onClick={handleViewDetails}>
       {/* Hospital Image - Smaller aspect ratio for big screens */}
       <div className="aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
         {/* Modern hospital room illustration */}

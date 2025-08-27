@@ -41,8 +41,10 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
     fetchDoctors();
   }, [hospital.id]);
 
+  console.log("Rendering HospitalDetail for:", hospital);
+
   const handleBack = () => {
-    router.push("/Dashboard");
+    router.push("/dashboard");
   };
 
   const handleCall = () => {
