@@ -2,8 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+
 
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -12,35 +15,31 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Demo credentials for user login
-  const demoCredentials = {
-    email: "user@carepoint.com",
-    password: "user123",
-  };
+  // Import apiClient
+  // ...existing code...
+  const { apiClient } = require("../../lib/apiClient");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (
-      credentials.email === demoCredentials.email &&
-      credentials.password === demoCredentials.password
-    ) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: credentials.email,
-          isAuthenticated: true,
-        })
-      );
-      router.push("/dashboard"); // ✅ all users go to dashboard
-    } else {
-      setError("Invalid credentials. Please use the demo credentials provided.");
+    try {
+      // Use correct backend endpoint
+      const data = await apiClient.post("/auth/login", {
+        email: credentials.email,
+        password: credentials.password,
+      });
+      if (data && data.token && data.user) {
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "Invalid credentials. Please try again.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error. Please try again later.");
     }
-
     setLoading(false);
   };
 
@@ -51,10 +50,11 @@ const LoginPage = () => {
     });
   };
 
+  // Optionally, you can keep this for demo/testing
   const fillDemoCredentials = () => {
     setCredentials({
-      email: demoCredentials.email,
-      password: demoCredentials.password,
+      email: "user@carepoint.com",
+      password: "user123",
     });
   };
 
@@ -105,17 +105,26 @@ const LoginPage = () => {
                 placeholder="Email address"
               />
             </div>
-            <div>
+            <div className="relative">
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={credentials.password}
                 onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm pr-10"
                 placeholder="Password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 focus:outline-none"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+              </button>
             </div>
           </div>
 
@@ -136,13 +145,13 @@ const LoginPage = () => {
           </div>
 
           <div className="mt-6 text-center">
-            <button
+            {/* <button
               type="button"
               onClick={fillDemoCredentials}
               className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded border"
             >
               Fill Demo User Credentials
-            </button>
+            </button> */}
           </div>
 
           <div className="flex items-center justify-between mt-4">

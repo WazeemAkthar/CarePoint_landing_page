@@ -4,7 +4,13 @@ import React from 'react';
 export interface Hospital {
   id: number;
   name: string;
-  location: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country?: string;
+  };  
   rating: number;
   specialty: string;
 }
@@ -15,9 +21,22 @@ interface HospitalCardProps {
 }
 
 const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) => {
-  const handleViewDetails = () => {
+  const handleViewDetails = async () => {
     if (onViewDetails) {
-      onViewDetails(hospital);
+      try {
+        // Fetch full hospital details from backend using hospital.id
+        const { apiClient } = require("../lib/apiClient");
+        const response = await apiClient.get(`/hospitals/${hospital.id}`);
+        if (response && response.hospital) {
+          onViewDetails(response.hospital);
+        } else {
+          // fallback to current hospital if backend fails
+          onViewDetails(hospital);
+        }
+      } catch (error) {
+        // fallback to current hospital if error
+        onViewDetails(hospital);
+      }
     }
   };
 
@@ -64,7 +83,7 @@ const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) 
               clipRule="evenodd" 
             />
           </svg>
-          <span className="text-sm lg:text-xs text-gray-600 line-clamp-1">{hospital.location}</span>
+            <span className="text-sm lg:text-xs text-gray-600 line-clamp-1">{hospital.address?.city || "N/A"}, {hospital.address?.state || "N/A"}</span>
         </div>
         
         <div className="flex items-center justify-between">

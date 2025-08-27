@@ -15,9 +15,34 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
   onDoctorSelect
 }) => {
   const router = useRouter();
+  const [doctors, setDoctors] = React.useState<Doctor[]>([]);
+  const [isLoadingDoctors, setIsLoadingDoctors] = React.useState<boolean>(true);
+  const [doctorError, setDoctorError] = React.useState<string>("");
+
+  React.useEffect(() => {
+    const fetchDoctors = async () => {
+      setIsLoadingDoctors(true);
+      setDoctorError("");
+      try {
+        const { apiClient } = require("../lib/apiClient");
+        const response = await apiClient.get(`/doctors?hospital=${hospital.id}`);
+        if (response && response.doctors) {
+          setDoctors(response.doctors);
+        } else {
+          setDoctors([]);
+        }
+      } catch (error) {
+        setDoctorError("Failed to load doctors.");
+        setDoctors([]);
+      } finally {
+        setIsLoadingDoctors(false);
+      }
+    };
+    fetchDoctors();
+  }, [hospital.id]);
 
   const handleBack = () => {
-    router.back();
+    router.push("/Dashboard");
   };
 
   const handleCall = () => {
@@ -29,7 +54,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
   };
 
   const handleDirections = () => {
-    const query = encodeURIComponent(hospital.location);
+    const query = encodeURIComponent(hospital.address.city);
     window.open(`https://maps.google.com/?q=${query}`, "_blank");
   };
 
@@ -88,7 +113,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-sm">{hospital.location}</span>
+          <span className="text-sm">{hospital.address.city}, {hospital.address.state}</span>
         </div>
 
         {/* Action Buttons */}
@@ -186,9 +211,13 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
             </button>
           </div>
 
-          {hospital.doctors.length > 0 ? (
+          {isLoadingDoctors ? (
+            <div>Loading doctors...</div>
+          ) : doctorError ? (
+            <div>Error: {doctorError}</div>
+          ) : doctors.length > 0 ? (
             <div className="space-y-4">
-              {hospital.doctors.slice(0, 2).map((doctor) => (
+              {doctors.slice(0, 2).map((doctor) => (
                 <div
                   key={doctor.id}
                   onClick={() => onDoctorSelect(doctor)}
@@ -264,7 +293,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
         </div>
 
         {/* View All Doctors Button */}
-        {hospital.doctors.length > 0 && (
+        {doctors.length > 0 && (
           <button className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
             View All Doctors
           </button>
