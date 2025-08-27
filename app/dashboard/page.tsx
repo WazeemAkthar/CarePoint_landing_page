@@ -13,10 +13,13 @@ const Dashboard: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty>("Cardiology");
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<Specialty>("Cardiology");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentView, setCurrentView] = useState<ViewState>("dashboard");
-  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(
+    null
+  );
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [activeTab, setActiveTab] = useState<string>("hospitals");
 
@@ -39,7 +42,7 @@ const Dashboard: React.FC = () => {
         const { apiClient } = require("../../lib/apiClient");
         const params = new URLSearchParams({
           specialty: selectedSpecialty,
-          limit: "50"
+          limit: "50",
         });
         const response = await apiClient.get(`/hospitals?${params.toString()}`);
         if (response && response.hospitals) {
@@ -47,7 +50,9 @@ const Dashboard: React.FC = () => {
           // Extract unique specialties from hospitals
           const specialtySet = new Set<string>();
           response.hospitals.forEach((hospital: Hospital) => {
-            hospital.specialties.forEach((spec: string) => specialtySet.add(spec));
+            hospital.specialties.forEach((spec: string) =>
+              specialtySet.add(spec)
+            );
           });
           setSpecialties(Array.from(specialtySet) as Specialty[]);
         } else {
@@ -64,16 +69,16 @@ const Dashboard: React.FC = () => {
     fetchDashboardData();
   }, [router, selectedSpecialty]);
 
-  const handleLogout = (): void => {
-    try {
-      // Clear user data and navigate to login
-      setUser(null);
-      router.push("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-      router.push("/login");
-    }
-  };
+  // const handleLogout = (): void => {
+  //   try {
+  //     // Clear user data and navigate to login
+  //     setUser(null);
+  //     router.push("/login");
+  //   } catch (error) {
+  //     console.error("Error during logout:", error);
+  //     router.push("/login");
+  //   }
+  // };
 
   const handleHospitalViewDetails = (hospital: Hospital): void => {
     router.push(`/Hospital/${hospital.id}`);
@@ -137,10 +142,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white px-4 py-6 sm:px-6">
-        <div className="flex justify-between items-start mb-6">
+      <header className="sticky top-0 z-50 bg-white px-4 py-1 sm:px-6 shadow-sm">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            <h1 className="text-2xl font-bold text-gray-900">
               Hello {user?.username}
             </h1>
             <p className="text-gray-600 text-base">
@@ -148,13 +153,13 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
+            {/* <button
               onClick={handleLogout}
               className="text-sm text-red-500 font-medium hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded px-2 py-1"
               aria-label="Logout"
             >
               Logout
-            </button>
+            </button> */}
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
               <span
                 className="text-gray-600 text-sm"
@@ -168,7 +173,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="relative mb-6">
+        <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg
               className="h-5 w-5 text-gray-400"
@@ -191,16 +196,14 @@ const Dashboard: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm transition-all"
+            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm transition-all"
             aria-label="Search hospitals"
           />
         </div>
 
         {/* Specialties */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">
-            Specialties
-          </h2>
+        <div className="">
+          <h2 className="text-lg font-semibold text-gray-900">Specialties</h2>
           <div className="flex gap-3 overflow-x-auto  [&::-webkit-scrollbar]:hidden p-2">
             {specialties.map((specialty: Specialty) => (
               <button
@@ -218,15 +221,14 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
         </div>
-      </header>
-
-      {/* Hospital Results */}
-      <div className="px-4 sm:px-6 pb-20">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-semibold text-gray-900">
           {filteredHospitals.length} Hospital
           {filteredHospitals.length !== 1 ? "s" : ""} Found
         </h2>
+      </header>
 
+      {/* Hospital Results */}
+      <div className="px-4 sm:px-6 pb-20 mt-3">
         {filteredHospitals.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
@@ -255,12 +257,17 @@ const Dashboard: React.FC = () => {
           /* Vertical Hospital Cards */
           <div className="flex flex-wrap gap-4">
             {filteredHospitals.map((hospital: Hospital) => (
-              <div className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)] hover:cursor-pointer" key={hospital.id}>
+              <div
+                className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)] hover:cursor-pointer"
+                key={hospital.id}
+              >
                 <HospitalCard
-                    key={hospital.id}
-                    hospital={hospital}
-                    onViewDetails={(h: any) => handleHospitalViewDetails(h as Hospital)}
-                  />
+                  key={hospital.id}
+                  hospital={hospital}
+                  onViewDetails={(h: any) =>
+                    handleHospitalViewDetails(h as Hospital)
+                  }
+                />
               </div>
             ))}
           </div>
@@ -268,10 +275,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-      />
+      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );
 };
