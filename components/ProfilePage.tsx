@@ -97,30 +97,46 @@ const ProfilePage: React.FC = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleSave = async () => {
-    if (!profile) return;
+const handleSave = async () => {
+  if (!profile) return;
 
-    try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.error('User ID not found in localStorage.');
-        return;
-      }
-
-      const updatedProfile = await apiClient.put<UserProfile>(`/user/profile/${userId}`, {
-        fullName: profile.fullName,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-      });
-
-      setProfile(updatedProfile);
-      setIsEditing(false);
-      alert('Profile updated successfully.');
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      alert('Failed to update profile. Please try again.');
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      console.error('User data not found in localStorage.');
+      alert('Session expired. Please log in again.');
+      window.location.href = '/login';
+      return;
     }
-  };
+
+    const user = JSON.parse(storedUser);
+    const updatedProfile = await apiClient.patch<UserProfile>(`/users/profile/${user.id}`, {
+      username: profile.fullName,
+      email: profile.email,
+      phone: profile.phoneNumber,
+    });
+
+    console.log('Payload:', {
+      username: profile.fullName,
+      email: profile.email,
+      phone: profile.phoneNumber,
+    });
+    console.log('Response:', updatedProfile);
+
+    setProfile({
+      id: updatedProfile.id, 
+      fullName: updatedProfile.fullName,
+      email: updatedProfile.email,
+      phoneNumber: updatedProfile.phoneNumber,
+    });
+    setIsEditing(false);
+    alert('Profile updated successfully.');
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    alert('Failed to update profile. Please try again.');
+  }
+};
+
 
   const handleInputChange = (field: keyof UserProfile, value: string) => {
     setProfile(prev => {

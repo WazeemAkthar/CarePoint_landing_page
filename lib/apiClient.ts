@@ -32,7 +32,6 @@ class ApiClient {
   }
 
   private handleError(error: any, url?: string): Error {
-    // Log the full error object for debugging
     console.error('API Error:', error);
     if (url) {
       console.error(`Error occurred while accessing URL: ${url}`);
@@ -41,7 +40,6 @@ class ApiClient {
       return new Error(`Error ${error.response.status}: ${error.response.data.message}`);
     }
     if (error.response?.data) {
-      // If data exists but no message, stringify it
       return new Error(`Error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
     }
     if (error.message) {
@@ -76,6 +74,24 @@ class ApiClient {
       throw this.handleError(error, url);
     }
   }
-}
 
-export const apiClient = new ApiClient(API_BASE_URL + '/api');
+  // 👇 Add these two methods
+  async patch<T, D = any>(url: string, data?: D): Promise<T> {
+    try {
+      const response = await this.client.patch<T>(url, data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, url);
+    }
+  }
+
+  async delete<T>(url: string): Promise<T> {
+    try {
+      const response = await this.client.delete<T>(url);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error, url);
+    }
+  }
+}
+export const apiClient = new ApiClient(`${API_BASE_URL}/api`);
