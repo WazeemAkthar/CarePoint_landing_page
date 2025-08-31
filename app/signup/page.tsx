@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react"; 
@@ -63,6 +63,23 @@ const SignUpPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user && user.id) {
+          console.log("User session restored:", user);
+          router.push("/dashboard");
+        } else {
+          console.warn("Invalid user data in localStorage. Proceeding with signup.");
+        }
+      } catch (error) {
+        console.error("Failed to parse user data from localStorage. Proceeding with signup.", error);
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
