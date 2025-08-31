@@ -40,7 +40,7 @@ const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) 
       }
     }
   };
-  console.log("Rendering HospitalCard for:", hospital);
+
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow w-full max-w-sm mx-auto lg:mx-0" onClick={handleViewDetails}>
