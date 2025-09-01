@@ -5,6 +5,7 @@ export interface Doctor {
   id: number;
   name: string;
   specialty: Specialty;
+  hospital: number;
   rating: number;
   experience: number;
   patients: number;
@@ -24,6 +25,7 @@ export interface Hospital {
     zipCode: string;
     country?: string;
   };
+
   rating: number;
   specialty: Specialty;
   phone: string;

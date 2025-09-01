@@ -310,6 +310,40 @@ useEffect(() => {
                     </div>
                     <button className="absolute bottom-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                       <Camera size={18} className="text-gray-600" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id="profile-image-upload"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !profile) return;
+                          const formData = new FormData();
+                          formData.append('profileImage', file);
+                          try {
+                            const response = await apiClient.patch<UpdateUserResponse>(
+                              `/profile/${profile.id}/profile-image`,
+                              formData,
+                              {
+                                headers: {
+                                  'Content-Type': 'multipart/form-data',
+                                },
+                              }
+                            );
+                            if (response.success) {
+                              setProfile(response.user);
+                              localStorage.setItem('user', JSON.stringify(response.user));
+                              alert('Profile image updated successfully.');
+                            } else {
+                              alert(response.message || 'Failed to update profile image.');
+                            }
+                          } catch (error) {
+                            console.error('Failed to upload image:', error);
+                            alert('Failed to upload image. Please try again.');
+                          }
+                        }}
+                      />
+                      <label htmlFor="profile-image-upload" className="absolute inset-0 w-full h-full cursor-pointer"></label>
                     </button>
                   </div>
                   <h2 className="text-2xl font-bold mb-2">
