@@ -52,7 +52,9 @@ const LoginPage = () => {
       });
       if (data && data.token && data.user) {
         localStorage.setItem("authToken", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userId", data.user.id);
+
         router.push("/dashboard");
       } else {
         setError(data.message || "Invalid credentials. Please try again.");
