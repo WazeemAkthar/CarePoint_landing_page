@@ -1,6 +1,6 @@
 // components/BottomNavigation.tsx
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Calendar, Hospital, Heart, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -23,6 +23,8 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [isVisible, setIsVisible] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -51,6 +53,48 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     }
   ];
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      // Show navigation when scrolling (either direction)
+      setIsVisible(true);
+      
+      // Clear existing timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      
+      // Hide after 2 seconds of no scrolling
+      timeoutId = setTimeout(() => {
+        if (!isHovered) {
+          setIsVisible(false);
+        }
+      }, 2000);
+    };
+
+    // Add scroll listener to window for global scroll detection
+    const handleWindowScroll = () => {
+      handleScroll();
+    };
+
+    // Add scroll listener to document body as well
+    const handleDocumentScroll = () => {
+      handleScroll();
+    };
+
+    window.addEventListener('scroll', handleWindowScroll, { passive: true });
+    document.addEventListener('scroll', handleDocumentScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleWindowScroll);
+      document.removeEventListener('scroll', handleDocumentScroll);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isHovered]);
+
   const handleTabClick = (item: NavItem) => {
     // Call the onTabChange callback if provided
     onTabChange?.(item.id);
@@ -69,8 +113,23 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     return pathname === item.path;
   };
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    setIsVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb z-50">
+    <div 
+      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb z-50 transition-transform duration-300 ease-in-out ${
+        isVisible || isHovered ? "translate-y-0" : "translate-y-full"
+      }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="flex justify-around py-2">
         {navItems.map((item) => {
           const IconComponent = item.icon;
