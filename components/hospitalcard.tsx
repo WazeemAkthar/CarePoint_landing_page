@@ -22,6 +22,7 @@ interface HospitalCardProps {
 }
 
 const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) => {
+  
   const handleViewDetails = async () => {
     if (onViewDetails) {
       try {
