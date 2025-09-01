@@ -12,3 +12,9 @@ export interface SettingsItem {
   icon: string;
   route: string;
 }
+interface UpdateProfileResponse {
+  id: string;
+  username: string;
+  email: string;
+  phone: string;
+}

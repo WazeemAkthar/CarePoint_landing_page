@@ -108,6 +108,8 @@ const Dashboard: React.FC = () => {
 
   const filteredHospitals = hospitals.filter(
     (hospital: Hospital) =>
+          hospital.isActive && // only active hospitals
+
       hospital.specialties.includes(selectedSpecialty) &&
       hospital.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
