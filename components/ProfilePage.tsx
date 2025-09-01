@@ -88,6 +88,7 @@ useEffect(() => {
       setProfile(response.user);
       setIsEditing(false);
       alert('Profile updated successfully.');
+      localStorage.setItem('user', JSON.stringify(response.user));
     } else {
       alert(response.message || 'Failed to update profile.');
     }
