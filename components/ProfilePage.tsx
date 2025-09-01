@@ -1,8 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Calendar, FileText, LogOut, Edit, Camera } from 'lucide-react';
 import { UserProfile, SettingsItem } from '../types/profile';
 import BottomNavigation from "@/components/BottomNavigation";
+import { apiClient } from '@/lib/apiClient';
 
 // Mock data
 const mockUserProfile: UserProfile = {
@@ -36,11 +37,55 @@ const settingsItems: SettingsItem[] = [
 type ViewState = "profile";
 
 const ProfilePage: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-const [activeTab, setActiveTab] = useState<string>("profile");
-const [currentView, setCurrentView] = useState<ViewState>("profile");
-const handleTabChange = (tabId: string): void => {
+  const [activeTab, setActiveTab] = useState<string>("profile");
+  const [currentView, setCurrentView] = useState<ViewState>("profile");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+          console.warn("No user session found. Redirecting to login.");
+          alert("Session expired. Redirecting to login.");
+          window.location.href = "/login";
+          return;
+        }
+
+        const user = JSON.parse(storedUser);
+        if (!user.id) {
+          console.warn("Invalid user data in localStorage. Redirecting to login.");
+          alert("Session expired. Redirecting to login.");
+          window.location.href = "/login";
+          return;
+        }
+
+        console.log("Restored user session:", user);
+        setProfile({
+          id: user.id,
+          fullName: user.username,
+          email: user.email,
+          phoneNumber: user.phone,
+        });
+      } catch (error: any) {
+        if (error.message.includes("404")) {
+          console.error("Profile not found:", error);
+          alert("Profile not found. Please contact support or try again later.");
+        } else if (error.message.includes("Network error")) {
+          console.error("Network error occurred:", error);
+          alert("Network error. Please check your connection and try again.");
+        } else {
+          console.error("Failed to fetch user profile:", error);
+          alert("An error occurred while fetching your profile. Please try again later.");
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const handleTabChange = (tabId: string): void => {
     setActiveTab(tabId);
     if (tabId === "profile") {
       setCurrentView("profile");
@@ -52,25 +97,66 @@ const handleTabChange = (tabId: string): void => {
     setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
-    // Here you would typically make an API call to update the profile
-    console.log('Profile updated:', profile);
+const handleSave = async () => {
+  if (!profile) return;
+
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      console.error('User data not found in localStorage.');
+      alert('Session expired. Please log in again.');
+      window.location.href = '/login';
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    const updatedProfile = await apiClient.patch<UserProfile>(`/users/profile/${user.id}`, {
+      username: profile.fullName,
+      email: profile.email,
+      phone: profile.phoneNumber,
+    });
+
+    console.log('Payload:', {
+      username: profile.fullName,
+      email: profile.email,
+      phone: profile.phoneNumber,
+    });
+    console.log('Response:', updatedProfile);
+
+    setProfile({
+      id: updatedProfile.id, 
+      fullName: updatedProfile.fullName,
+      email: updatedProfile.email,
+      phoneNumber: updatedProfile.phoneNumber,
+    });
     setIsEditing(false);
-  };
+    alert('Profile updated successfully.');
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    alert('Failed to update profile. Please try again.');
+  }
+};
+
 
   const handleInputChange = (field: keyof UserProfile, value: string) => {
-    setProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setProfile(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   const handleSettingsItemClick = (item: SettingsItem) => {
-    // Handle navigation or action based on the item
     console.log(`Navigating to: ${item.route}`);
     if (item.id === '3') {
       // Handle logout
       console.log('Logging out...');
+      localStorage.removeItem('user');
+      localStorage.removeItem('authToken');
+      alert('You have been logged out. Redirecting to login.');
+      window.location.href = '/login';
     }
   };
 
@@ -88,6 +174,15 @@ const handleTabChange = (tabId: string): void => {
         return null;
     }
   };
+
+  // Add a loading state to handle null profile
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -118,10 +213,10 @@ const handleTabChange = (tabId: string): void => {
               </button>
             </div>
             <h2 className="text-xl font-semibold text-white mb-1">
-              {profile.fullName}
+              {profile?.fullName}
             </h2>
             <p className="text-green-100 text-sm">
-              {profile.email}
+              {profile?.email}
             </p>
           </div>
         </div>
@@ -270,14 +365,14 @@ const handleTabChange = (tabId: string): void => {
                     </button>
                   </div>
                   <h2 className="text-2xl font-bold mb-2">
-                    {profile.fullName}
+                    {profile?.fullName}
                   </h2>
                   <p className="text-green-100 mb-4">
-                    {profile.email}
+                    {profile?.email}
                   </p>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3 flex items-center">
                     <Phone size={16} className="mr-2" />
-                    <span className="text-sm">{profile.phoneNumber}</span>
+                    <span className="text-sm">{profile?.phoneNumber}</span>
                   </div>
                 </div>
               </div>

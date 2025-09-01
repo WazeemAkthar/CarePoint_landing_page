@@ -28,6 +28,14 @@ const Dashboard: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      console.warn("No auth token found. Redirecting to login.");
+      router.push("/login");
+    }
+  }, [router]);
+
+  useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         // Read user from localStorage (set on login/signup)

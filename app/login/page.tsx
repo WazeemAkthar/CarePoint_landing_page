@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -16,8 +16,28 @@ const LoginPage = () => {
   const router = useRouter();
 
   // Import apiClient
-  // ...existing code...
   const { apiClient } = require("../../lib/apiClient");
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user && user.id) {
+          console.log("User session restored:", user);
+        } else {
+          console.warn("Invalid user data in localStorage. Redirecting to login.");
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Failed to parse user data from localStorage. Redirecting to login.", error);
+        router.push("/login");
+      }
+    } else {
+      console.info("No user session found. Redirecting to login.");
+      router.push("/login");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
