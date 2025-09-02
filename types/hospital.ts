@@ -5,6 +5,7 @@ export interface Doctor {
   id: number;
   name: string;
   specialty: Specialty;
+  hospital: number;
   rating: number;
   experience: number;
   patients: number;
@@ -15,7 +16,6 @@ export interface Doctor {
 }
 
 export interface Hospital {
-  location: ReactNode;
   id: number;
   name: string;
   address: {
@@ -25,6 +25,7 @@ export interface Hospital {
     zipCode: string;
     country?: string;
   };
+
   rating: number;
   specialty: Specialty;
   phone: string;
@@ -35,6 +36,7 @@ export interface Hospital {
   specialties: Specialty[];
   description: string;
   facilities: string[];
+  isActive: boolean;
 }
 
 export interface User {

@@ -6,12 +6,13 @@ import HospitalDetail from "@/components/HospitalDetail";
 import DoctorProfile from "@/components/DoctorProfile";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Hospital, User, Specialty, Doctor } from "@/types/hospital";
+import { UserProfile } from "@/types/profile";
 
 type ViewState = "dashboard" | "hospital-detail" | "doctor-profile";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] =  useState<UserProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedSpecialty, setSelectedSpecialty] =
     useState<Specialty>("Cardiology");
@@ -108,6 +109,8 @@ const Dashboard: React.FC = () => {
 
   const filteredHospitals = hospitals.filter(
     (hospital: Hospital) =>
+          hospital.isActive && // only active hospitals
+
       hospital.specialties.includes(selectedSpecialty) &&
       hospital.name.toLowerCase().includes(searchQuery.toLowerCase())
   );

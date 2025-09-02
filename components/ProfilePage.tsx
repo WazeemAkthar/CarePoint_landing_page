@@ -5,33 +5,21 @@ import { UserProfile, SettingsItem } from '../types/profile';
 import BottomNavigation from "@/components/BottomNavigation";
 import { apiClient } from '@/lib/apiClient';
 
-// Mock data
-const mockUserProfile: UserProfile = {
-  id: '1',
-  fullName: 'Mahfoos Ahamed',
-  email: 'mahf@gmail.com',
-  phoneNumber: '0775491905',
-};
+interface UserResponse {
+  success: boolean;
+  data: UserProfile;
+  message?: string;
+}
+interface UpdateUserResponse {
+  success: boolean;
+  message: string;
+  user: UserProfile;
+}
 
 const settingsItems: SettingsItem[] = [
-  {
-    id: '1',
-    title: 'My Appointments',
-    icon: 'calendar',
-    route: '/appointments'
-  },
-  {
-    id: '2',
-    title: 'Terms & Privacy Policy',
-    icon: 'document',
-    route: '/terms-privacy'
-  },
-  {
-    id: '3',
-    title: 'Logout',
-    icon: 'logout',
-    route: '/logout'
-  }
+  { id: '1', title: 'My Appointments', icon: 'calendar', route: '/appointments' },
+  { id: '2', title: 'Terms & Privacy Policy', icon: 'document', route: '/terms-privacy' },
+  { id: '3', title: 'Logout', icon: 'logout', route: '/logout' }
 ];
 
 type ViewState = "profile";
@@ -41,96 +29,69 @@ const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [currentView, setCurrentView] = useState<ViewState>("profile");
+  const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const storedUser = localStorage.getItem("user");
-        if (!storedUser) {
-          console.warn("No user session found. Redirecting to login.");
-          alert("Session expired. Redirecting to login.");
-          window.location.href = "/login";
-          return;
-        }
+  // Get userId from localStorage
+useEffect(() => {
+  const storedUserId = localStorage.getItem('userId');
+  if (!storedUserId) {
+    alert('User not logged in. Redirecting to login.');
+    window.location.href = '/login';
+    return;
+  }
+  setUserId(storedUserId);
+}, []);
 
-        const user = JSON.parse(storedUser);
-        if (!user.id) {
-          console.warn("Invalid user data in localStorage. Redirecting to login.");
-          alert("Session expired. Redirecting to login.");
-          window.location.href = "/login";
-          return;
-        }
+// Fetch profile whenever userId is set
+useEffect(() => {
+  if (!userId) return;
 
-        console.log("Restored user session:", user);
-        setProfile({
-          id: user.id,
-          fullName: user.username,
-          email: user.email,
-          phoneNumber: user.phone,
-        });
-      } catch (error: any) {
-        if (error.message.includes("404")) {
-          console.error("Profile not found:", error);
-          alert("Profile not found. Please contact support or try again later.");
-        } else if (error.message.includes("Network error")) {
-          console.error("Network error occurred:", error);
-          alert("Network error. Please check your connection and try again.");
-        } else {
-          console.error("Failed to fetch user profile:", error);
-          alert("An error occurred while fetching your profile. Please try again later.");
-        }
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
-
-  const handleTabChange = (tabId: string): void => {
-    setActiveTab(tabId);
-    if (tabId === "profile") {
-      setCurrentView("profile");
+  const fetchProfile = async () => {
+    try {
+      const response = await apiClient.get<{ success: boolean; user: UserProfile }>(`/users/${userId}`);
+      setProfile(response.user); // not response.data, not response directly
+    } catch (error: any) {
+      console.error('Profile fetch error:', error);
+      alert('Could not fetch profile. Please login again.');
+      window.location.href = '/login';
     }
-    // Handle other tab navigation here
-    console.log("Navigate to:", tabId);
-  };
-  const handleEdit = () => {
-    setIsEditing(!isEditing);
   };
 
-const handleSave = async () => {
+  fetchProfile();
+}, [userId]);
+
+
+
+
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    if (tabId === "profile") setCurrentView("profile");
+  };
+
+  const handleEdit = () => setIsEditing(!isEditing);
+
+  const handleSave = async () => {
   if (!profile) return;
 
-  try {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      console.error('User data not found in localStorage.');
-      alert('Session expired. Please log in again.');
-      window.location.href = '/login';
-      return;
+ try {
+    const response = await apiClient.patch<UpdateUserResponse>(
+      `/users/profile/${profile.id}`,
+      {
+        username: profile.username,
+        email: profile.email,
+        phone: profile.phone,
+      }
+    );
+
+    if (response.success) {
+      setProfile(response.user);
+      setIsEditing(false);
+      alert('Profile updated successfully.');
+      localStorage.setItem('user', JSON.stringify(response.user));
+    } else {
+      alert(response.message || 'Failed to update profile.');
     }
-
-    const user = JSON.parse(storedUser);
-    const updatedProfile = await apiClient.patch<UserProfile>(`/users/profile/${user.id}`, {
-      username: profile.fullName,
-      email: profile.email,
-      phone: profile.phoneNumber,
-    });
-
-    console.log('Payload:', {
-      username: profile.fullName,
-      email: profile.email,
-      phone: profile.phoneNumber,
-    });
-    console.log('Response:', updatedProfile);
-
-    setProfile({
-      id: updatedProfile.id, 
-      fullName: updatedProfile.fullName,
-      email: updatedProfile.email,
-      phoneNumber: updatedProfile.phoneNumber,
-    });
-    setIsEditing(false);
-    alert('Profile updated successfully.');
   } catch (error) {
     console.error('Failed to update profile:', error);
     alert('Failed to update profile. Please try again.');
@@ -138,44 +99,31 @@ const handleSave = async () => {
 };
 
 
+
   const handleInputChange = (field: keyof UserProfile, value: string) => {
-    setProfile(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        [field]: value,
-      };
-    });
+    setProfile(prev => prev ? { ...prev, [field]: value } : null);
   };
 
   const handleSettingsItemClick = (item: SettingsItem) => {
-    console.log(`Navigating to: ${item.route}`);
     if (item.id === '3') {
-      // Handle logout
-      console.log('Logging out...');
-      localStorage.removeItem('user');
       localStorage.removeItem('authToken');
       alert('You have been logged out. Redirecting to login.');
       window.location.href = '/login';
+      return;
     }
+    window.location.href = item.route;
   };
 
   const renderIcon = (iconName: string, className: string = '') => {
     const iconProps = { size: 20, className };
-    
     switch (iconName) {
-      case 'calendar':
-        return <Calendar {...iconProps} />;
-      case 'document':
-        return <FileText {...iconProps} />;
-      case 'logout':
-        return <LogOut {...iconProps} />;
-      default:
-        return null;
+      case 'calendar': return <Calendar {...iconProps} />;
+      case 'document': return <FileText {...iconProps} />;
+      case 'logout': return <LogOut {...iconProps} />;
+      default: return null;
     }
   };
 
-  // Add a loading state to handle null profile
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -213,7 +161,7 @@ const handleSave = async () => {
               </button>
             </div>
             <h2 className="text-xl font-semibold text-white mb-1">
-              {profile?.fullName}
+              {profile?.username}
             </h2>
             <p className="text-green-100 text-sm">
               {profile?.email}
@@ -240,13 +188,13 @@ const handleSave = async () => {
                 {isEditing ? (
                   <input
                     type="text"
-                    value={profile.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    value={profile.username}
+                    onChange={(e) => handleInputChange('username', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                   />
                 ) : (
                   <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-gray-800">
-                    {profile.fullName}
+                    {profile.username}
                   </div>
                 )}
               </div>
@@ -285,13 +233,13 @@ const handleSave = async () => {
                 {isEditing ? (
                   <input
                     type="tel"
-                    value={profile.phoneNumber}
-                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    value={profile.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                   />
                 ) : (
                   <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-gray-800">
-                    {profile.phoneNumber}
+                    {profile.phone}
                   </div>
                 )}
               </div>
@@ -362,17 +310,51 @@ const handleSave = async () => {
                     </div>
                     <button className="absolute bottom-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                       <Camera size={18} className="text-gray-600" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id="profile-image-upload"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !profile) return;
+                          const formData = new FormData();
+                          formData.append('profileImage', file);
+                          try {
+                            const response = await apiClient.patch<UpdateUserResponse>(
+                              `/profile/${profile.id}/profile-image`,
+                              formData,
+                              {
+                                headers: {
+                                  'Content-Type': 'multipart/form-data',
+                                },
+                              }
+                            );
+                            if (response.success) {
+                              setProfile(response.user);
+                              localStorage.setItem('user', JSON.stringify(response.user));
+                              alert('Profile image updated successfully.');
+                            } else {
+                              alert(response.message || 'Failed to update profile image.');
+                            }
+                          } catch (error) {
+                            console.error('Failed to upload image:', error);
+                            alert('Failed to upload image. Please try again.');
+                          }
+                        }}
+                      />
+                      <label htmlFor="profile-image-upload" className="absolute inset-0 w-full h-full cursor-pointer"></label>
                     </button>
                   </div>
                   <h2 className="text-2xl font-bold mb-2">
-                    {profile?.fullName}
+                    {profile?.username}
                   </h2>
                   <p className="text-green-100 mb-4">
                     {profile?.email}
                   </p>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3 flex items-center">
                     <Phone size={16} className="mr-2" />
-                    <span className="text-sm">{profile?.phoneNumber}</span>
+                    <span className="text-sm">{profile?.phone}</span>
                   </div>
                 </div>
               </div>
@@ -411,13 +393,13 @@ const handleSave = async () => {
                     {isEditing ? (
                       <input
                         type="text"
-                        value={profile.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        value={profile.username}
+                        onChange={(e) => handleInputChange('username', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
                     ) : (
                       <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-gray-800 font-medium">
-                        {profile.fullName}
+                        {profile.username}
                       </div>
                     )}
                   </div>
@@ -456,13 +438,13 @@ const handleSave = async () => {
                     {isEditing ? (
                       <input
                         type="tel"
-                        value={profile.phoneNumber}
-                        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                        value={profile.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
                     ) : (
                       <div className="w-full px-4 py-3 bg-gray-50 rounded-xl text-gray-800">
-                        {profile.phoneNumber}
+                        {profile.phone}
                       </div>
                     )}
                   </div>

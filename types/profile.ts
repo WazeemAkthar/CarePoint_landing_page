@@ -1,8 +1,8 @@
 export interface UserProfile {
   id: string;
-  fullName: string;
+  username: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   profileImage?: string;
 }
 
@@ -12,3 +12,4 @@ export interface SettingsItem {
   icon: string;
   route: string;
 }
+

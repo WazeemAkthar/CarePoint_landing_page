@@ -64,22 +64,7 @@ const SignUpPage = () => {
     }
   };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        if (user && user.id) {
-          console.log("User session restored:", user);
-          router.push("/dashboard");
-        } else {
-          console.warn("Invalid user data in localStorage. Proceeding with signup.");
-        }
-      } catch (error) {
-        console.error("Failed to parse user data from localStorage. Proceeding with signup.", error);
-      }
-    }
-  }, []);
+  // Removed useEffect that redirects to dashboard if user is present
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -131,6 +116,7 @@ const SignUpPage = () => {
               id="email"
               name="email"
               type="email"
+              autoComplete="off"
               required
               value={formData.email}
               onChange={handleInputChange}
@@ -142,11 +128,13 @@ const SignUpPage = () => {
               id="phone"
               name="phone"
               type="tel"
+              autoComplete="on"
               required
               value={formData.phone}
               onChange={handleInputChange}
               className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
               placeholder="Phone Number"
+              
             />
 
             {/* Password field with eye toggle */}
