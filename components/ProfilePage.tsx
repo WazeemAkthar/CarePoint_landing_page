@@ -306,7 +306,15 @@ useEffect(() => {
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
                     <div className="w-32 h-32 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                      <User size={50} className="text-white" />
+                      {profile.profileImage ? (
+                        <img
+                          src={profile.profileImage}
+                          alt="Profile"
+                          className="w-32 h-32 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User size={50} className="text-white" />
+                      )}
                     </div>
                     <button className="absolute bottom-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                       <Camera size={18} className="text-gray-600" />
@@ -322,7 +330,7 @@ useEffect(() => {
                           formData.append('profileImage', file);
                           try {
                             const response = await apiClient.patch<UpdateUserResponse>(
-                              `/profile/${profile.id}/profile-image`,
+                              `/users/profile/${profile.id}/profile-image`,
                               formData,
                               {
                                 headers: {
@@ -360,7 +368,7 @@ useEffect(() => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              {/* <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                   <div className="text-2xl font-bold text-green-500">12</div>
                   <div className="text-sm text-gray-600">Appointments</div>
@@ -369,7 +377,7 @@ useEffect(() => {
                   <div className="text-2xl font-bold text-blue-500">3</div>
                   <div className="text-sm text-gray-600">Hospitals</div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Right Column - Personal Information & Settings */}
