@@ -24,7 +24,9 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
   const handleBookAppointment = () => {
     onBookAppointment?.();
     // Navigate to appointment booking page
+
     router.push(`/book-appointment?doctorId=${doctor.id}`);
+
     console.log("Book appointment for:", doctor.name);
   };
 
