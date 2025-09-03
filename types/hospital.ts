@@ -10,7 +10,7 @@ export interface Doctor {
   profileImage?: string;
   email: string;
   phone: string;
-  // ...other backend fields as needed
+  experience: number; // in years
 }
 
 export interface Hospital {
@@ -29,7 +29,7 @@ export interface Hospital {
   phone: string;
   email: string;
   isEmergencyAvailable: boolean;
-  image: string;
+  profileImage: string;
   doctors: Doctor[];
   specialties: Specialty[];
   description: string;

@@ -91,7 +91,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
       {/* Hospital Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={hospital.image}
+          src={hospital.profileImage}
           alt={hospital.name}
           className="w-full h-full object-cover"
         />
@@ -229,19 +229,27 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
                     className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                      <svg
-                        className="w-8 h-8 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      {doctor.profileImage ? (
+                        <img
+                          src={doctor.profileImage}
+                          alt={doctor.name}
+                          className="w-12 h-12 rounded-full object-cover"
                         />
-                      </svg>
+                      ) : (
+                        <svg
+                          className="w-8 h-8 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      )}
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-900">{doctor.name}</h4>

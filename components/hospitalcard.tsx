@@ -13,6 +13,7 @@ export interface Hospital {
   };  
   rating: number;
   specialty: string;
+  profileImage?: string;
 }
 
 interface HospitalCardProps {
@@ -44,26 +45,32 @@ const HospitalCard: React.FC<HospitalCardProps> = ({ hospital, onViewDetails }) 
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow w-full max-w-sm mx-auto lg:mx-0" onClick={handleViewDetails}>
-      {/* Hospital Image - Smaller aspect ratio for big screens */}
+      {/* Hospital Image or Illustration */}
       <div className="aspect-[4/3] md:aspect-[3/2] lg:aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-        {/* Modern hospital room illustration */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
-          {/* Hospital bed - Scaled for smaller cards */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75 lg:scale-90">
-            <div className="w-20 h-12 bg-white rounded-lg shadow-lg relative">
-              {/* Bed frame */}
-              <div className="absolute bottom-0 left-1 right-1 h-2 bg-gray-200 rounded-b-lg"></div>
-              {/* Pillow */}
-              <div className="absolute top-1 left-2 w-6 h-3 bg-green-100 rounded"></div>
-              {/* Blanket */}
-              <div className="absolute top-4 left-1 right-1 h-6 bg-blue-100 rounded"></div>
+        {hospital.profileImage ? (
+          <img
+            src={hospital.profileImage}
+            alt={hospital.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50">
+            {/* Hospital bed - Scaled for smaller cards */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75 lg:scale-90">
+              <div className="w-20 h-12 bg-white rounded-lg shadow-lg relative">
+                {/* Bed frame */}
+                <div className="absolute bottom-0 left-1 right-1 h-2 bg-gray-200 rounded-b-lg"></div>
+                {/* Pillow */}
+                <div className="absolute top-1 left-2 w-6 h-3 bg-green-100 rounded"></div>
+                {/* Blanket */}
+                <div className="absolute top-4 left-1 right-1 h-6 bg-blue-100 rounded"></div>
+              </div>
+              {/* Chair */}
+              <div className="absolute -right-8 top-2 w-8 h-8 bg-blue-600 rounded-lg opacity-80"></div>
+              <div className="absolute -right-6 top-6 w-4 h-4 bg-blue-700 rounded opacity-80"></div>
             </div>
-            {/* Chair */}
-            <div className="absolute -right-8 top-2 w-8 h-8 bg-blue-600 rounded-lg opacity-80"></div>
-            <div className="absolute -right-6 top-6 w-4 h-4 bg-blue-700 rounded opacity-80"></div>
           </div>
-        </div>
-        
+        )}
         {/* Rating Badge - Responsive sizing */}
         <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
           <span className="text-yellow-500 text-xs lg:text-sm">⭐</span>

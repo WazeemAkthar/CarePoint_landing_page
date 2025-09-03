@@ -78,7 +78,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
             <h2 className="text-xl font-bold text-gray-900 mb-1">
               {doctor.name}
             </h2>
-            <p className="text-gray-600">{doctor.specialty}</p>
+            <p className="text-gray-600">{doctor.specialization}</p>
           </div>
 
           {/* Doctor Stats */}
@@ -100,7 +100,6 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                 </svg>
               </div>
               <div className="text-lg font-bold text-gray-900">
-                {doctor.patients.toLocaleString()}+
               </div>
               <div className="text-sm text-gray-600">Patients</div>
             </div>
@@ -152,7 +151,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
             <div className="flex items-center">
               <div className="w-12 h-12 bg-gray-100 rounded-lg mr-3 overflow-hidden">
                 <img
-                  src={hospital.image}
+                  src={hospital.profileImage}
                   alt={hospital.name}
                   className="w-full h-full object-cover"
                 />
@@ -167,7 +166,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>{hospital.location}</span>
+                  <span>{hospital.address.city}</span>
                 </div>
               </div>
             </div>
@@ -192,11 +191,12 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
           <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Working Days
           </h3>
-          <p className="text-gray-600">{doctor.workingDays.join(", ")}</p>
+          {/* <p className="text-gray-600">{doctor.workingDays.join(", ")}</p> */}
         </div>
 
         {/* Qualifications */}
-        {doctor.qualifications && doctor.qualifications.length > 0 && (
+        {/* {doctor.qualifications && doctor.qualifications.length > 
+        0 && (
           <div className="bg-white rounded-lg p-4 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
               Qualifications
@@ -215,14 +215,14 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
         )}
 
         {/* About Doctor */}
-        {doctor.about && (
+        {/* {doctor.about && (
           <div className="bg-white rounded-lg p-4 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
               About Doctor
             </h3>
             <p className="text-gray-600 leading-relaxed">{doctor.about}</p>
           </div>
-        )}
+        )} */}
 
         {/* Book Appointment Button */}
         <button
