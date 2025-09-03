@@ -2,17 +2,19 @@
 export type Specialty = "Cardiology" | "Neurology" | "Pediatrics" | "Orthopedics";
 
 export interface Doctor {
-  id: number;
+  id: string;
   name: string;
-  specialty: Specialty;
-  hospital: number;
+  specialization: string;
+  hospital: string | { id: string; name: string; address?: any };
   rating: number;
-  experience: number;
-  patients: number;
-  workingDays: string[];
-  image?: string;
-  qualifications: string[];
-  about: string;
+  profileImage?: string;
+  email: string;
+  phone: string;
+  experience: number; // in years
+   availableSlots: {
+    [day: string]: { from: string }[];
+  };
+
 }
 
 export interface Hospital {
@@ -31,7 +33,7 @@ export interface Hospital {
   phone: string;
   email: string;
   isEmergencyAvailable: boolean;
-  image: string;
+  profileImage: string;
   doctors: Doctor[];
   specialties: Specialty[];
   description: string;
