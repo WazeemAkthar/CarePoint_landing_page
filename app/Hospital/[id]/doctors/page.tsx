@@ -72,7 +72,10 @@ const AllDoctorsPage: React.FC = () => {
             {doctors.map((doctor) => (
               <div
                 key={doctor.id}
+                                      onClick={() => router.push(`/Hospital/${hospitalId}/doctors/${doctor.id}`)}
+
                 className="flex items-center p-4 bg-gray-50 rounded-lg shadow"
+
               >
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
                  {doctor.profileImage ? (

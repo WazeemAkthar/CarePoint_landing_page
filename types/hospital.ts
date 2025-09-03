@@ -11,6 +11,10 @@ export interface Doctor {
   email: string;
   phone: string;
   experience: number; // in years
+   availableSlots: {
+    [day: string]: { from: string }[];
+  };
+
 }
 
 export interface Hospital {

@@ -4,6 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Hospital, Doctor } from "@/types/hospital";
 import BottomNavigation from "@/components/BottomNavigation";
+import CryptoJS from "crypto-js";
+
 
 interface HospitalDetailProps {
   hospital: Hospital;
@@ -59,6 +61,9 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
     const query = encodeURIComponent(hospital.address.city);
     window.open(`https://maps.google.com/?q=${query}`, "_blank");
   };
+  const encryptId = (id: string | number) => {
+  return CryptoJS.AES.encrypt(String(id), "your-secret-key").toString();
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
