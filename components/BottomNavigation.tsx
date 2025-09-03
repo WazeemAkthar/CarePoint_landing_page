@@ -124,38 +124,82 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb z-50 transition-transform duration-300 ease-in-out ${
+      className={`fixed bottom-0 left-0 right-0 safe-area-pb z-50 transition-all duration-300 ease-in-out ${
         isVisible || isHovered ? "translate-y-0" : "translate-y-full"
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex justify-around py-2">
-        {navItems.map((item) => {
-          const IconComponent = item.icon;
-          const isActive = isActiveTab(item);
+      {/* Glass morphism background with subtle gradient */}
+      <div className="relative">
+        {/* Background blur layer */}
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-lg border-t border-gray-200/50" />
+        
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
+        
+        {/* Active tab indicator background */}
+        <div className="relative px-4 py-3">
+          <div className="flex justify-around items-center mx-auto">
+            {navItems.map((item, index) => {
+              const IconComponent = item.icon;
+              const isActive = isActiveTab(item);
+              
+              return (
+                <div key={item.id} className="relative md:flex-none flex-1 flex justify-center">
+                  {/* Active tab background indicator */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-green-50 rounded-2xl scale-110 transition-all duration-300 ease-out shadow-lg" />
+                  )}
+                  
+                  <button
+                    onClick={() => handleTabClick(item)}
+                    className={`relative flex flex-col items-center py-2 px-4 rounded-2xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2 focus:ring-offset-white/50 ${
+                      isActive
+                        ? "text-green-600 transform scale-105"
+                        : "text-gray-500 hover:text-gray-700 hover:scale-102 hover:bg-gray-50/50"
+                    }`}
+                    aria-pressed={isActive}
+                    aria-label={`Navigate to ${item.label}`}
+                  >
+                    {/* Icon container with enhanced styling */}
+                    <div className={`relative p-1 rounded-xl transition-all duration-300 ${
+                      isActive 
+                        ? "bg-green-100/70 shadow-sm" 
+                        : "hover:bg-gray-100/50"
+                    }`}>
+                      <IconComponent 
+                        className={`w-6 h-6 transition-all duration-300 ${
+                          isActive 
+                            ? 'text-green-600 drop-shadow-sm' 
+                            : 'text-gray-500'
+                        }`}
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
+                      
+                      {/* Active indicator dot */}
+                      {isActive && (
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full shadow-sm animate-pulse" />
+                      )}
+                    </div>
+                    
+                    {/* Enhanced label styling */}
+                    <span className={`text-xs mt-1.5 transition-all duration-300 ${
+                      isActive 
+                        ? "font-semibold text-green-600 drop-shadow-sm" 
+                        : "font-medium text-gray-500"
+                    }`}>
+                      {item.label}
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
           
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleTabClick(item)}
-              className={`flex flex-col items-center py-2 px-4 transition-colors focus:outline-none focus:ring-2 focus:ring-opacity-50 rounded-md ${
-                isActive
-                  ? "text-green-500 focus:ring-green-500"
-                  : "text-gray-500 hover:text-gray-700 focus:ring-gray-500"
-              }`}
-              aria-pressed={isActive}
-              aria-label={`Navigate to ${item.label}`}
-            >
-              <IconComponent 
-                className={`w-6 h-6 ${isActive ? 'text-green-500' : 'text-gray-500'}`} 
-              />
-              <span className={`text-xs mt-1 ${isActive ? "font-medium text-green-500" : "text-gray-500"}`}>
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full" />
+        </div>
       </div>
     </div>
   );
