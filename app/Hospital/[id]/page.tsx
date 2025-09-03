@@ -47,7 +47,7 @@ const HospitalPage: React.FC = () => {
     // Fetch using decrypted real ID
     fetchHospitalDetails(decryptedId);
   }, [hospitalIdEncrypted]);
-  
+
   if (isLoading) {
     return <div className="text-center py-20">Loading...</div>;
   }
@@ -61,7 +61,7 @@ const HospitalPage: React.FC = () => {
       hospital={hospital}
       onDoctorSelect={(doctor) => {
         console.log("Selected doctor:", doctor);
-         router.push(`/Hospital/${hospital.id}/doctors/${doctor.id}`);
+         router.push(`/Hospital/${hospitalIdEncrypted}/doctors/${doctor.id}`);
       }}
     />
   );
