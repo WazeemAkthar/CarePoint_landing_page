@@ -150,7 +150,7 @@ export default function Header(): JSX.Element {
                 Download App
               </Button>
 <Link href="/login">
-              <Button className="w-full bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold py-3 rounded-xl transform hover:scale-[1.02] transition-all duration-200">
+              <Button className="w-full bg-gradient-to-r from-[#00A733] to-[#00D63F] hover:from-[#008A2B] hover:to-[#00B837] text-white font-semibold py-3 mt-3 rounded-xl transform hover:scale-[1.02] transition-all duration-200">
                 Book Appointment
               </Button>
               </Link>
