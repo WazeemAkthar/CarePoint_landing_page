@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   CheckCircle, 
@@ -33,7 +33,18 @@ interface BookingDetails {
   bookingTime: string;
 }
 
-const BookingSuccessPage = () => {
+// Loading component for Suspense fallback
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-green-200 border-t-green-500 rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading booking details...</p>
+    </div>
+  </div>
+);
+
+// Separate component that uses useSearchParams
+const BookingContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
@@ -334,6 +345,15 @@ Hospital: ${bookingDetails.hospitalName}
         </div>
       </div>
     </div>
+  );
+};
+
+// Main component with Suspense wrapper
+const BookingSuccessPage = () => {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <BookingContent />
+    </Suspense>
   );
 };
 
