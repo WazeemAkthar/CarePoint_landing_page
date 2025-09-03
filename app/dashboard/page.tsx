@@ -172,13 +172,21 @@ const Dashboard: React.FC = () => {
               Logout
             </button> */}
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-              <span
-                className="text-gray-600 text-sm"
-                role="img"
-                aria-label="User avatar"
-              >
-                👤
-              </span>
+              {user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-14 h-14 rounded-full object-cover"
+                />
+              ) : (
+                <span
+                  className="text-gray-600 text-sm"
+                  role="img"
+                  aria-label="User avatar"
+                >
+                  {user?.username ? user.username.slice(0,1).toUpperCase() : "U"}
+                </span>
+              )}
             </div>
           </div>
         </div>
