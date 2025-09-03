@@ -197,7 +197,6 @@ const BookAppointmentForm = () => {
       });
       
       // Navigate to success page or show success message
-      alert('Appointment booked successfully!');
       router.push(`/booking-success?patientName=${formData.patientName}&date=${formData.selectedDate}&time=${formData.selectedTime}&phone=${formData.phoneNumber}&symptoms=${formData.symptoms}`);
     }
   };
