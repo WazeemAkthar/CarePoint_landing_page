@@ -18,6 +18,7 @@ export interface Doctor {
 }
 
 export interface Hospital {
+  location: ReactNode;
   id: number;
   name: string;
   address: {
