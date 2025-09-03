@@ -100,11 +100,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
           alt={hospital.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute bottom-4 right-4">
-          <div className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">
-            EMERGENCY
-          </div>
-        </div>
+        
       </div>
 
       {/* Hospital Info */}
