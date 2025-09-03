@@ -7,6 +7,8 @@ import DoctorProfile from "@/components/DoctorProfile";
 import BottomNavigation from "@/components/BottomNavigation";
 import { Hospital, User, Specialty, Doctor } from "@/types/hospital";
 import { UserProfile } from "@/types/profile";
+import { encryptId } from "@/lib/cryptoUtils";
+
 
 type ViewState = "dashboard" | "hospital-detail" | "doctor-profile";
 
@@ -90,8 +92,11 @@ const Dashboard: React.FC = () => {
   // };
 
   const handleHospitalViewDetails = (hospital: Hospital): void => {
-    router.push(`/Hospital/${hospital.id}`);
-  };
+  const encryptedId = encryptId(hospital.id);
+  const safeId = encodeURIComponent(encryptedId);
+  router.push(`/Hospital/${safeId}`);
+};
+
 
   const handleDoctorSelect = (doctor: Doctor): void => {
     setSelectedDoctor(doctor);
