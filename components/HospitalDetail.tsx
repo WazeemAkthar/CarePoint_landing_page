@@ -224,13 +224,15 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
             <div>Error: {doctorError}</div>
           ) : doctors.length > 0 ? (
             <div className="space-y-4">
+              
               {doctors
+              
                 .filter((doctor) => typeof doctor.hospital === 'object' && doctor.hospital.id === String(hospital.id))
                 .slice(0, 2)
                 .map((doctor) => (
                   <div
                     key={doctor.id}
-                    onClick={() => onDoctorSelect(doctor)}
+                    onClick={() => router.push(`/Hospital/${hospital.id}/doctors/${doctor.id}`)}
                     className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
