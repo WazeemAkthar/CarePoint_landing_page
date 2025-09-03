@@ -5,12 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import HospitalDetail from "@/components/HospitalDetail";
 import { Hospital } from "@/types/hospital";
 
+
 const HospitalPage = () => {
   const params = useParams();
   const hospitalId = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const [hospital, setHospital] = useState<Hospital | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (!hospitalId) return;
@@ -44,6 +46,7 @@ const HospitalPage = () => {
       hospital={hospital}
       onDoctorSelect={(doctor) => {
         console.log("Selected doctor:", doctor);
+         router.push(`/Hospital/${hospital.id}/doctors/${doctor.id}`);
       }}
     />
   );

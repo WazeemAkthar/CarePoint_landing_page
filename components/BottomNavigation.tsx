@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Calendar, Hospital, Heart, User } from 'lucide-react';
+import { Calendar, Hospital, HeartPulse, User } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 type NavItem = {
@@ -42,7 +42,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     {
       id: "health-tips",
       label: "Health Tips",
-      icon: Heart,
+      icon: HeartPulse,
       path: "/health-tips"
     },
     {
