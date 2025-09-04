@@ -3,43 +3,64 @@ import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Doctor } from "@/types/hospital";
 import BottomNavigation from "@/components/BottomNavigation";
+import { decryptId } from "@/lib/cryptoUtils";
+import { encryptId } from "@/lib/cryptoUtils";
 
 const AllDoctorsPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
-  const hospitalId = params.id as string;
+  const hospitalIdEncrypted = params.id as string;
 
   const [doctors, setDoctors] = React.useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    const fetchAllDoctors = async () => {
-      if (!hospitalId) return;
+    React.useEffect(() => {
+    if (!hospitalIdEncrypted) return;
 
+    let decryptedId: string;
+    try {
+      // Step 1: Decode
+      const decodedId = decodeURIComponent(hospitalIdEncrypted);
+      // Step 2: Decrypt
+      decryptedId = decryptId(decodedId);
+      if (!decryptedId) throw new Error("Invalid decrypted ID");
+    } catch (err) {
+      console.error("Failed to decrypt hospital ID:", err);
+      setError("Invalid hospital ID");
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchAllDoctors = async (id: string) => {
       setIsLoading(true);
       setError(null);
       try {
         const { apiClient } = require("../../../../lib/apiClient");
-        const response = await apiClient.get(`/doctors?hospital=${hospitalId}`);
+        const response = await apiClient.get(`/doctors?hospital=${id}`);
+
         if (response && response.doctors) {
-          // Filter doctors by hospital ID on the client side just in case API doesn't filter.
+          // Client-side filtering fallback
           const filteredDoctors = response.doctors.filter(
-            (doc: Doctor) => typeof doc.hospital === 'object' && doc.hospital.id === hospitalId
+            (doc: Doctor) =>
+              typeof doc.hospital === "object" &&
+              doc.hospital?.id === id
           );
           setDoctors(filteredDoctors);
         } else {
           setDoctors([]);
         }
       } catch (err) {
+        console.error("Failed to fetch doctors:", err);
         setError("Failed to load doctors.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchAllDoctors();
-  }, [hospitalId]);
+    // Use decrypted **real hospital ID**
+    fetchAllDoctors(decryptedId);
+  }, [hospitalIdEncrypted]);
 
   const handleBack = () => {
     router.back();
@@ -69,11 +90,14 @@ const AllDoctorsPage: React.FC = () => {
           <div className="text-center text-red-500">{error}</div>
         ) : doctors.length > 0 ? (
           <div className="space-y-4">
-            {doctors.map((doctor) => (
-              <div
-                key={doctor.id}
-                                      onClick={() => router.push(`/Hospital/${hospitalId}/doctors/${doctor.id}`)}
-
+  {doctors.map((doctor) => (
+    <div
+      key={doctor.id}
+      onClick={() => {
+        // Encrypt and encode doctor.id
+        const encryptedDoctorId = encodeURIComponent(encryptId(doctor.id));
+        router.push(`/Hospital/${hospitalIdEncrypted}/doctors/${encryptedDoctorId}`);
+      }}
                 className="flex items-center p-4 bg-gray-50 rounded-lg shadow"
 
               >
