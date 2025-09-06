@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Hospital, Doctor } from "@/types/hospital";
 import BottomNavigation from "@/components/BottomNavigation";
-import CryptoJS from "crypto-js";
+import { encryptId } from "@/lib/cryptoUtils";
 
 
 interface HospitalDetailProps {
@@ -61,9 +61,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
     const query = encodeURIComponent(hospital.address.city);
     window.open(`https://maps.google.com/?q=${query}`, "_blank");
   };
-  const encryptId = (id: string | number) => {
-  return CryptoJS.AES.encrypt(String(id), "your-secret-key").toString();
-};
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -205,14 +203,20 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
           </div>
         </div>
 
-        {/* Doctors Section */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Doctors</h3>
-            <button className="text-green-600 text-sm font-medium">
-              See All
-            </button>
-          </div>
+       {/* Doctors Section */}
+<div className="mb-6">
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="text-lg font-semibold text-gray-900">Doctors</h3>
+    <button
+      onClick={() => {
+        const encryptedHospitalId = encodeURIComponent(encryptId(hospital.id));
+        router.push(`/Hospital/${encryptedHospitalId}/doctors`);
+      }}
+      className="text-green-600 text-sm font-medium"
+    >
+      See All
+    </button>
+  </div>
 
           {isLoadingDoctors ? (
             <div>Loading doctors...</div>
@@ -220,19 +224,25 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
             <div>Error: {doctorError}</div>
           ) : doctors.length > 0 ? (
             <div className="space-y-4">
-              
-              {doctors
-              
-                .filter((doctor) => typeof doctor.hospital === 'object' && doctor.hospital.id === String(hospital.id))
-                .slice(0, 2)
-                .map((doctor) => (
-                  <div
-                    key={doctor.id}
-                    onClick={() => router.push(`/Hospital/${hospital.id}/doctors/${doctor.id}`)}
-                    className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                  >
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                      {doctor.profileImage ? (
+             {doctors
+  .filter(
+    (doctor) =>
+      typeof doctor.hospital === "object" &&
+      doctor.hospital.id === String(hospital.id)
+  )
+  .slice(0, 2)
+  .map((doctor) => (
+    <div
+      key={doctor.id}
+      onClick={() => {
+        const encryptedHospitalId = encodeURIComponent(encryptId(hospital.id));
+        const encryptedDoctorId = encodeURIComponent(encryptId(doctor.id));
+        router.push(`/Hospital/${encryptedHospitalId}/doctors/${encryptedDoctorId}`);
+      }}
+      className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+    >
+      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+        {doctor.profileImage ? (
                         <img
                           src={doctor.profileImage}
                           alt={doctor.name}
@@ -312,7 +322,14 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
         {doctors.length > 0 && (
           <button
             className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
-            onClick={() => router.push(`/Hospital/${hospital.id}/doctors`)}
+            onClick={() => {
+              // Encrypt hospital ID first
+              const encryptedId = encryptId(hospital.id);
+              // Encode it for safe URL usage
+              const safeId = encodeURIComponent(encryptedId);
+              // Navigate to doctors page with encrypted ID
+              router.push(`/Hospital/${safeId}/doctors`);
+            }}
           >
             View All Doctors
           </button>
