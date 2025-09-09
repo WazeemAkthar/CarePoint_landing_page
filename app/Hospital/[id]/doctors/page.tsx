@@ -2,7 +2,7 @@
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Doctor } from "@/types/hospital";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "@/components/SideNavigation";
 import { decryptId } from "@/lib/cryptoUtils";
 import { encryptId } from "@/lib/cryptoUtils";
 
@@ -15,7 +15,7 @@ const AllDoctorsPage: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
 
-    React.useEffect(() => {
+  React.useEffect(() => {
     if (!hospitalIdEncrypted) return;
 
     let decryptedId: string;
@@ -43,8 +43,7 @@ const AllDoctorsPage: React.FC = () => {
           // Client-side filtering fallback
           const filteredDoctors = response.doctors.filter(
             (doc: Doctor) =>
-              typeof doc.hospital === "object" &&
-              doc.hospital?.id === id
+              typeof doc.hospital === "object" && doc.hospital?.id === id
           );
           setDoctors(filteredDoctors);
         } else {
@@ -75,8 +74,18 @@ const AllDoctorsPage: React.FC = () => {
             className="mr-4 p-2 hover:bg-green-700 rounded-full transition-colors"
             aria-label="Go back"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
           <h1 className="text-lg font-semibold">All Doctors</h1>
@@ -90,49 +99,53 @@ const AllDoctorsPage: React.FC = () => {
           <div className="text-center text-red-500">{error}</div>
         ) : doctors.length > 0 ? (
           <div className="space-y-4">
-  {doctors.map((doctor) => (
-    <div
-      key={doctor.id}
-      onClick={() => {
-        // Encrypt and encode doctor.id
-        const encryptedDoctorId = encodeURIComponent(encryptId(doctor.id));
-        router.push(`/Hospital/${hospitalIdEncrypted}/doctors/${encryptedDoctorId}`);
-      }}
+            {doctors.map((doctor) => (
+              <div
+                key={doctor.id}
+                onClick={() => {
+                  // Encrypt and encode doctor.id
+                  const encryptedDoctorId = encodeURIComponent(
+                    encryptId(doctor.id)
+                  );
+                  router.push(
+                    `/Hospital/${hospitalIdEncrypted}/doctors/${encryptedDoctorId}`
+                  );
+                }}
                 className="flex items-center p-4 bg-gray-50 rounded-lg shadow"
-
               >
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                 {doctor.profileImage ? (
-                        <img
-                          src={doctor.profileImage}
-                          alt={doctor.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <svg
-                          className="w-8 h-8 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      )}
+                  {doctor.profileImage ? (
+                    <img
+                      src={doctor.profileImage}
+                      alt={doctor.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      className="w-8 h-8 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">{doctor.name}</h4>
-                <p className="text-sm text-gray-600">{doctor.specialization}</p>
+                  <p className="text-sm text-gray-600">
+                    {doctor.specialization}
+                  </p>
                   <p className="text-xs text-gray-500">
-                    {
-                      typeof doctor.hospital === 'object' && doctor.hospital !== null 
-                        ? doctor.hospital.name 
-                        : 'Unknown Hospital'
-                    }
+                    {typeof doctor.hospital === "object" &&
+                    doctor.hospital !== null
+                      ? doctor.hospital.name
+                      : "Unknown Hospital"}
                   </p>
                 </div>
               </div>

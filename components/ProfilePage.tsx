@@ -1,9 +1,19 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, Calendar, FileText, LogOut, Edit, Camera } from 'lucide-react';
-import { UserProfile, SettingsItem } from '../types/profile';
-import BottomNavigation from "@/components/BottomNavigation";
-import { apiClient } from '@/lib/apiClient';
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  FileText,
+  LogOut,
+  Edit,
+  Camera,
+} from "lucide-react";
+import { UserProfile, SettingsItem } from "../types/profile";
+import BottomNavigation from "@/components/SideNavigation";
+import { apiClient } from "@/lib/apiClient";
+import ConditionalSidebar from '@/components/ConditionalSidebar';
 
 interface UserResponse {
   success: boolean;
@@ -17,9 +27,19 @@ interface UpdateUserResponse {
 }
 
 const settingsItems: SettingsItem[] = [
-  { id: '1', title: 'My Appointments', icon: 'calendar', route: '/appointments' },
-  { id: '2', title: 'Terms & Privacy Policy', icon: 'document', route: '/terms-privacy' },
-  { id: '3', title: 'Logout', icon: 'logout', route: '/logout' }
+  {
+    id: "1",
+    title: "My Appointments",
+    icon: "calendar",
+    route: "/appointments",
+  },
+  {
+    id: "2",
+    title: "Terms & Privacy Policy",
+    icon: "document",
+    route: "/terms-privacy",
+  },
+  { id: "3", title: "Logout", icon: "logout", route: "/logout" },
 ];
 
 type ViewState = "profile";
@@ -32,37 +52,36 @@ const ProfilePage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
 
   // Get userId from localStorage
-useEffect(() => {
-  const storedUserId = localStorage.getItem('userId');
-  if (!storedUserId) {
-    alert('User not logged in. Redirecting to login.');
-    window.location.href = '/login';
-    return;
-  }
-  setUserId(storedUserId);
-}, []);
-
-// Fetch profile whenever userId is set
-useEffect(() => {
-  if (!userId) return;
-
-  const fetchProfile = async () => {
-    try {
-      const response = await apiClient.get<{ success: boolean; user: UserProfile }>(`/users/${userId}`);
-      setProfile(response.user); // not response.data, not response directly
-    } catch (error: any) {
-      console.error('Profile fetch error:', error);
-      alert('Could not fetch profile. Please login again.');
-      window.location.href = '/login';
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (!storedUserId) {
+      alert("User not logged in. Redirecting to login.");
+      window.location.href = "/login";
+      return;
     }
-  };
+    setUserId(storedUserId);
+  }, []);
 
-  fetchProfile();
-}, [userId]);
+  // Fetch profile whenever userId is set
+  useEffect(() => {
+    if (!userId) return;
 
+    const fetchProfile = async () => {
+      try {
+        const response = await apiClient.get<{
+          success: boolean;
+          user: UserProfile;
+        }>(`/users/${userId}`);
+        setProfile(response.user); // not response.data, not response directly
+      } catch (error: any) {
+        console.error("Profile fetch error:", error);
+        alert("Could not fetch profile. Please login again.");
+        window.location.href = "/login";
+      }
+    };
 
-
-
+    fetchProfile();
+  }, [userId]);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -72,55 +91,57 @@ useEffect(() => {
   const handleEdit = () => setIsEditing(!isEditing);
 
   const handleSave = async () => {
-  if (!profile) return;
+    if (!profile) return;
 
- try {
-    const response = await apiClient.patch<UpdateUserResponse>(
-      `/users/profile/${profile.id}`,
-      {
-        username: profile.username,
-        email: profile.email,
-        phone: profile.phone,
+    try {
+      const response = await apiClient.patch<UpdateUserResponse>(
+        `/users/profile/${profile.id}`,
+        {
+          username: profile.username,
+          email: profile.email,
+          phone: profile.phone,
+        }
+      );
+
+      if (response.success) {
+        setProfile(response.user);
+        setIsEditing(false);
+        alert("Profile updated successfully.");
+        localStorage.setItem("user", JSON.stringify(response.user));
+      } else {
+        alert(response.message || "Failed to update profile.");
       }
-    );
-
-    if (response.success) {
-      setProfile(response.user);
-      setIsEditing(false);
-      alert('Profile updated successfully.');
-      localStorage.setItem('user', JSON.stringify(response.user));
-    } else {
-      alert(response.message || 'Failed to update profile.');
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
-  } catch (error) {
-    console.error('Failed to update profile:', error);
-    alert('Failed to update profile. Please try again.');
-  }
-};
-
-
+  };
 
   const handleInputChange = (field: keyof UserProfile, value: string) => {
-    setProfile(prev => prev ? { ...prev, [field]: value } : null);
+    setProfile((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
   const handleSettingsItemClick = (item: SettingsItem) => {
-    if (item.id === '3') {
-      localStorage.removeItem('authToken');
-      alert('You have been logged out. Redirecting to login.');
-      window.location.href = '/login';
+    if (item.id === "3") {
+      localStorage.removeItem("authToken");
+      alert("You have been logged out. Redirecting to login.");
+      window.location.href = "/login";
       return;
     }
     window.location.href = item.route;
   };
 
-  const renderIcon = (iconName: string, className: string = '') => {
+  const renderIcon = (iconName: string, className: string = "") => {
     const iconProps = { size: 20, className };
     switch (iconName) {
-      case 'calendar': return <Calendar {...iconProps} />;
-      case 'document': return <FileText {...iconProps} />;
-      case 'logout': return <LogOut {...iconProps} />;
-      default: return null;
+      case "calendar":
+        return <Calendar {...iconProps} />;
+      case "document":
+        return <FileText {...iconProps} />;
+      case "logout":
+        return <LogOut {...iconProps} />;
+      default:
+        return null;
     }
   };
 
@@ -133,6 +154,7 @@ useEffect(() => {
   }
 
   return (
+    <ConditionalSidebar>
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Layout - unchanged */}
       <div className="lg:hidden">
@@ -163,9 +185,7 @@ useEffect(() => {
             <h2 className="text-xl font-semibold text-white mb-1">
               {profile?.username}
             </h2>
-            <p className="text-green-100 text-sm">
-              {profile?.email}
-            </p>
+            <p className="text-green-100 text-sm">{profile?.email}</p>
           </div>
         </div>
 
@@ -175,7 +195,9 @@ useEffect(() => {
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <div className="flex items-center mb-6">
               <User size={20} className="text-green-500 mr-3" />
-              <h3 className="text-lg font-semibold text-gray-800">Personal Information</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Personal Information
+              </h3>
             </div>
 
             <div className="space-y-6">
@@ -183,13 +205,17 @@ useEffect(() => {
               <div>
                 <div className="flex items-center mb-2">
                   <User size={16} className="text-green-500 mr-2" />
-                  <label className="text-sm font-medium text-gray-600">Full Name</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Full Name
+                  </label>
                 </div>
                 {isEditing ? (
                   <input
                     type="text"
                     value={profile.username}
-                    onChange={(e) => handleInputChange('username', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("username", e.target.value)
+                    }
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                   />
                 ) : (
@@ -203,14 +229,18 @@ useEffect(() => {
               <div>
                 <div className="flex items-center mb-2">
                   <Mail size={16} className="text-green-500 mr-2" />
-                  <label className="text-sm font-medium text-gray-600">Email Address</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Email Address
+                  </label>
                 </div>
                 <div className="relative">
                   {isEditing ? (
                     <input
                       type="email"
                       value={profile.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all pr-10"
                     />
                   ) : (
@@ -228,13 +258,15 @@ useEffect(() => {
               <div>
                 <div className="flex items-center mb-2">
                   <Phone size={16} className="text-green-500 mr-2" />
-                  <label className="text-sm font-medium text-gray-600">Phone Number</label>
+                  <label className="text-sm font-medium text-gray-600">
+                    Phone Number
+                  </label>
                 </div>
                 {isEditing ? (
                   <input
                     type="tel"
                     value={profile.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                   />
                 ) : (
@@ -248,8 +280,10 @@ useEffect(() => {
 
           {/* Settings */}
           <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">Settings</h3>
-            
+            <h3 className="text-lg font-semibold text-gray-800 mb-6">
+              Settings
+            </h3>
+
             <div className="space-y-1">
               {settingsItems.map((item) => (
                 <button
@@ -258,18 +292,34 @@ useEffect(() => {
                   className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors text-left"
                 >
                   <div className="flex items-center">
-                    {renderIcon(item.icon, item.id === '3' ? 'text-red-500 mr-4' : 'text-gray-600 mr-4')}
-                    <span className={`font-medium ${item.id === '3' ? 'text-red-500' : 'text-gray-800'}`}>
+                    {renderIcon(
+                      item.icon,
+                      item.id === "3"
+                        ? "text-red-500 mr-4"
+                        : "text-gray-600 mr-4"
+                    )}
+                    <span
+                      className={`font-medium ${
+                        item.id === "3" ? "text-red-500" : "text-gray-800"
+                      }`}
+                    >
                       {item.title}
                     </span>
                   </div>
                   <svg
-                    className={`w-5 h-5 ${item.id === '3' ? 'text-red-500' : 'text-gray-400'}`}
+                    className={`w-5 h-5 ${
+                      item.id === "3" ? "text-red-500" : "text-gray-400"
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               ))}
@@ -287,12 +337,12 @@ useEffect(() => {
             <button
               onClick={isEditing ? handleSave : handleEdit}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                isEditing 
-                  ? 'bg-green-500 text-white hover:bg-green-600' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                isEditing
+                  ? "bg-green-500 text-white hover:bg-green-600"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {isEditing ? 'Save Changes' : 'Edit Profile'}
+              {isEditing ? "Save Changes" : "Edit Profile"}
             </button>
           </div>
         </div>
@@ -321,45 +371,53 @@ useEffect(() => {
                       <input
                         type="file"
                         accept="image/*"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         id="profile-image-upload"
                         onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (!file || !profile) return;
                           const formData = new FormData();
-                          formData.append('profileImage', file);
+                          formData.append("profileImage", file);
                           try {
-                            const response = await apiClient.patch<UpdateUserResponse>(
-                              `/users/profile/${profile.id}/profile-image`,
-                              formData,
-                              {
-                                headers: {
-                                  'Content-Type': 'multipart/form-data',
-                                },
-                              }
-                            );
+                            const response =
+                              await apiClient.patch<UpdateUserResponse>(
+                                `/users/profile/${profile.id}/profile-image`,
+                                formData,
+                                {
+                                  headers: {
+                                    "Content-Type": "multipart/form-data",
+                                  },
+                                }
+                              );
                             if (response.success) {
                               setProfile(response.user);
-                              localStorage.setItem('user', JSON.stringify(response.user));
-                              alert('Profile image updated successfully.');
+                              localStorage.setItem(
+                                "user",
+                                JSON.stringify(response.user)
+                              );
+                              alert("Profile image updated successfully.");
                             } else {
-                              alert(response.message || 'Failed to update profile image.');
+                              alert(
+                                response.message ||
+                                  "Failed to update profile image."
+                              );
                             }
                           } catch (error) {
-                            console.error('Failed to upload image:', error);
-                            alert('Failed to upload image. Please try again.');
+                            console.error("Failed to upload image:", error);
+                            alert("Failed to upload image. Please try again.");
                           }
                         }}
                       />
-                      <label htmlFor="profile-image-upload" className="absolute inset-0 w-full h-full cursor-pointer"></label>
+                      <label
+                        htmlFor="profile-image-upload"
+                        className="absolute inset-0 w-full h-full cursor-pointer"
+                      ></label>
                     </button>
                   </div>
                   <h2 className="text-2xl font-bold mb-2">
                     {profile?.username}
                   </h2>
-                  <p className="text-green-100 mb-4">
-                    {profile?.email}
-                  </p>
+                  <p className="text-green-100 mb-4">{profile?.email}</p>
                   <div className="bg-white bg-opacity-20 rounded-lg p-3 flex items-center">
                     <Phone size={16} className="mr-2" />
                     <span className="text-sm">{profile?.phone}</span>
@@ -387,7 +445,9 @@ useEffect(() => {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center">
                     <User size={24} className="text-green-500 mr-3" />
-                    <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      Personal Information
+                    </h3>
                   </div>
                 </div>
 
@@ -396,13 +456,17 @@ useEffect(() => {
                   <div className="md:col-span-2">
                     <div className="flex items-center mb-3">
                       <User size={18} className="text-green-500 mr-2" />
-                      <label className="text-sm font-medium text-gray-600">Full Name</label>
+                      <label className="text-sm font-medium text-gray-600">
+                        Full Name
+                      </label>
                     </div>
                     {isEditing ? (
                       <input
                         type="text"
                         value={profile.username}
-                        onChange={(e) => handleInputChange('username', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("username", e.target.value)
+                        }
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
                     ) : (
@@ -416,14 +480,18 @@ useEffect(() => {
                   <div>
                     <div className="flex items-center mb-3">
                       <Mail size={18} className="text-green-500 mr-2" />
-                      <label className="text-sm font-medium text-gray-600">Email Address</label>
+                      <label className="text-sm font-medium text-gray-600">
+                        Email Address
+                      </label>
                     </div>
                     <div className="relative">
                       {isEditing ? (
                         <input
                           type="email"
                           value={profile.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
                           className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all pr-10"
                         />
                       ) : (
@@ -441,13 +509,17 @@ useEffect(() => {
                   <div>
                     <div className="flex items-center mb-3">
                       <Phone size={18} className="text-green-500 mr-2" />
-                      <label className="text-sm font-medium text-gray-600">Phone Number</label>
+                      <label className="text-sm font-medium text-gray-600">
+                        Phone Number
+                      </label>
                     </div>
                     {isEditing ? (
                       <input
                         type="tel"
                         value={profile.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("phone", e.target.value)
+                        }
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                       />
                     ) : (
@@ -461,37 +533,54 @@ useEffect(() => {
 
               {/* Settings */}
               <div className="bg-white rounded-2xl shadow-sm p-8">
-                <h3 className="text-xl font-semibold text-gray-800 mb-6">Settings & Actions</h3>
-                
+                <h3 className="text-xl font-semibold text-gray-800 mb-6">
+                  Settings & Actions
+                </h3>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {settingsItems.map((item) => (
                     <button
                       key={item.id}
                       onClick={() => handleSettingsItemClick(item)}
                       className={`p-6 rounded-xl border-2 transition-all text-left hover:shadow-md ${
-                        item.id === '3' 
-                          ? 'border-red-200 hover:border-red-300 hover:bg-red-50' 
-                          : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
+                        item.id === "3"
+                          ? "border-red-200 hover:border-red-300 hover:bg-red-50"
+                          : "border-gray-200 hover:border-green-300 hover:bg-green-50"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        {renderIcon(item.icon, item.id === '3' ? 'text-red-500' : 'text-green-500')}
+                        {renderIcon(
+                          item.icon,
+                          item.id === "3" ? "text-red-500" : "text-green-500"
+                        )}
                         <svg
-                          className={`w-5 h-5 ${item.id === '3' ? 'text-red-400' : 'text-gray-400'}`}
+                          className={`w-5 h-5 ${
+                            item.id === "3" ? "text-red-400" : "text-gray-400"
+                          }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
                         </svg>
                       </div>
-                      <h4 className={`font-semibold mb-1 ${item.id === '3' ? 'text-red-600' : 'text-gray-800'}`}>
+                      <h4
+                        className={`font-semibold mb-1 ${
+                          item.id === "3" ? "text-red-600" : "text-gray-800"
+                        }`}
+                      >
                         {item.title}
                       </h4>
                       <p className="text-sm text-gray-500">
-                        {item.id === '1' && 'View and manage your appointments'}
-                        {item.id === '2' && 'Read terms of service and privacy policy'}
-                        {item.id === '3' && 'Sign out of your account'}
+                        {item.id === "1" && "View and manage your appointments"}
+                        {item.id === "2" &&
+                          "Read terms of service and privacy policy"}
+                        {item.id === "3" && "Sign out of your account"}
                       </p>
                     </button>
                   ))}
@@ -501,13 +590,8 @@ useEffect(() => {
           </div>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-      />
     </div>
+    </ConditionalSidebar>
   );
 };
 
