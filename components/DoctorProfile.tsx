@@ -2,7 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Doctor, Hospital } from "@/types/hospital";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "@/components/SideNavigation";
 
 interface DoctorProfileProps {
   doctor: Doctor;
@@ -13,7 +13,7 @@ interface DoctorProfileProps {
 const DoctorProfile: React.FC<DoctorProfileProps> = ({
   doctor,
   hospital,
-  onBookAppointment
+  onBookAppointment,
 }) => {
   const router = useRouter();
 
@@ -56,7 +56,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
               </svg>
             </button>
             <h1 className="text-xl font-semibold">Doctor Profile</h1>
-          </div>                
+          </div>
         </div>
       </div>
 
@@ -90,11 +90,13 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                 )}
               </div>
             </div>
-            
+
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               {doctor.name}
             </h2>
-            <p className="text-gray-500 text-lg font-medium">{doctor.specialization}</p>
+            <p className="text-gray-500 text-lg font-medium">
+              {doctor.specialization}
+            </p>
           </div>
 
           {/* Enhanced Doctor Stats with better spacing and icons */}
@@ -107,13 +109,11 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                   </svg>
                 </div>
               </div>
-              <div className="text-xl font-bold text-gray-900 mb-1">
-                1000+
-              </div>
+              <div className="text-xl font-bold text-gray-900 mb-1">1000+</div>
               <div className="text-sm text-gray-500 font-medium">Patients</div>
             </div>
 
@@ -138,7 +138,9 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
               <div className="text-xl font-bold text-gray-900 mb-1">
                 {doctor.experience} Yrs
               </div>
-              <div className="text-sm text-gray-500 font-medium">Experience</div>
+              <div className="text-sm text-gray-500 font-medium">
+                Experience
+              </div>
             </div>
 
             <div className="text-center p-5 bg-gray-50 rounded-xl border border-gray-100">
@@ -178,7 +180,11 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                   {hospital.name}
                 </h4>
                 <div className="flex items-center text-gray-500 text-sm">
-                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"

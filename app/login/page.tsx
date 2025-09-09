@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
-
+import { Eye, EyeOff, Mail, Lock, Heart } from "lucide-react";
+import Image from "next/image";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,27 +17,6 @@ const LoginPage = () => {
 
   // Import apiClient
   const { apiClient } = require("../../lib/apiClient");
-
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     try {
-  //       const user = JSON.parse(storedUser);
-  //       if (user && user.id) {
-  //         console.log("User session restored:", user);
-  //       } else {
-  //         console.warn("Invalid user data in localStorage. Redirecting to login.");
-  //         router.push("/login");
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to parse user data from localStorage. Redirecting to login.", error);
-  //       router.push("/login");
-  //     }
-  //   } else {
-  //     console.info("No user session found. Redirecting to login.");
-  //     router.push("/login");
-  //   }
-  // }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,116 +60,222 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-600 rounded-full flex items-center justify-center">
-            <svg
-              className="h-6 w-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
-            Sign in to CarePoint
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Don’t have an account?{" "}
-            <Link
-              href="/signup"
-              className="font-medium text-green-600 hover:text-green-500"
-            >
-              Create one
-            </Link>
-          </p>
-        </div>
-
-  <form className="mt-8 space-y-6" onSubmit={handleSubmit} autoComplete="off">
-          <div className="space-y-4">
-            <div>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={credentials.email}
-                onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-teal-50 flex flex-col">
+      {/* Header with brand */}
+      <div className="w-full px-4 pt-8 pb-4">
+        <div className="flex items-center justify-center">
+          <div className="flex items-center space-x-3">
             <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                value={credentials.password}
-                onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm pr-10"
-                placeholder="Password"
-              />
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <Image
+                  alt="CarePoint Logo"
+                  width={24}
+                  height={24}
+                  className="w-5 h-5 lg:w-6 lg:h-6 text-white"
+                  src="/logo.png"
+                />
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                CarePoint
+              </h1>
+              <p className="text-xs text-gray-500 font-medium">
+                Healthcare Platform
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-8">
+        <div className="w-full max-w-sm">
+          {/* Welcome Section */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Welcome back
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Sign in to access your health dashboard and book appointments with
+              trusted healthcare providers
+            </p>
+          </div>
+
+          {/* Login Form Card */}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700 block"
+                >
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={credentials.email}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700 block"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={credentials.password}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-12 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center space-x-2">
+                  <svg
+                    className="w-4 h-4 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Submit Button */}
               <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center px-3 focus:outline-none"
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
-                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <span>Sign in to CarePoint</span>
+                )}
               </button>
-            </div>
+
+              {/* Forgot Password */}
+              <div className="text-center pt-2">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+            </form>
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-              {error}
-            </div>
-          )}
+          {/* Sign Up Link */}
+          <div className="text-center mt-6 px-4">
+            <p className="text-gray-600 text-sm">
+              New to CarePoint?{" "}
+              <Link
+                href="/signup"
+                className="text-green-600 hover:text-green-700 font-semibold transition-colors"
+              >
+                Create your account
+              </Link>
+            </p>
+          </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+          {/* Back to Home */}
+          <div className="text-center mt-4">
+            <Link
+              href="/"
+              className="text-xs text-gray-500 hover:text-gray-700 transition-colors inline-flex items-center space-x-1"
             >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span>Back to Home</span>
+            </Link>
           </div>
 
-          <div className="mt-6 text-center">
+          {/* Demo Credentials (Hidden) */}
+          <div className="hidden">
             {/* <button
               type="button"
               onClick={fillDemoCredentials}
-              className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded border"
+              className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded border transition-colors"
             >
               Fill Demo User Credentials
             </button> */}
           </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <Link
-              href="/"
-              className="text-sm font-medium text-green-600 hover:text-green-500"
-            >
-              Back to Home
-            </Link>
-            <Link
-              href="/forgot-password"
-              className="text-sm font-medium text-green-600 hover:text-green-500"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

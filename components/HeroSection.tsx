@@ -12,7 +12,6 @@ import {
   LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
-import HeroMockupCarousel from './HeroMockupCarousel'
 import Link from "next/link";
 
 // TypeScript interfaces
@@ -166,10 +165,21 @@ const rotateVariants = {
 const HeroSection: React.FC = () => {
   return (
     <section className="relative min-h-screen flex items-center py-8 md:py-12 lg:py-16 overflow-hidden">
-      {/* Premium Background with Original Light Theme */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,167,51,0.08),transparent_70%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.05),transparent_70%)]"></div>
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0">
+        {/* Replace '/path/to/your/background-image.jpg' with your actual image path */}
+        <Image
+          src="/background-image.jpg"
+          alt="Healthcare Background"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Background overlay with more transparency */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/40 via-white/30 to-emerald-50/25"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,167,51,0.04),transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.03),transparent_70%)]"></div>
+      </div>
 
       {/* Animated Floating Orbs */}
       <motion.div
@@ -192,19 +202,19 @@ const HeroSection: React.FC = () => {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 w-full">
         <motion.div
-          className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[calc(100vh-8rem)]"
+          className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] text-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* Left Content - Mobile Optimized */}
+          {/* Centered Content */}
           <motion.div
-            className="space-y-6 md:space-y-8 lg:space-y-10 order-2 lg:order-1"
+            className="space-y-6 md:space-y-8 lg:space-y-10 max-w-4xl"
             variants={slideInLeft}
           >
             {/* Premium Badge */}
             <motion.div
-              className="flex justify-center lg:justify-start"
+              className="flex justify-center"
               variants={itemVariants}
             >
               <motion.div
@@ -212,10 +222,7 @@ const HeroSection: React.FC = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <Badge className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/10 text-emerald-700 hover:from-emerald-500/20 hover:to-emerald-600/20 border border-emerald-200/50 px-4 md:px-6 py-1.5 md:py-2 rounded-full backdrop-blur-sm shadow-lg text-xs md:text-sm">
-                  <motion.div
-                  // animate={{ rotate: [0, 360] }}
-                  // transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  >
+                  <motion.div>
                     <Sparkles className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
                   </motion.div>
                   Trusted by 50+ Premium Hospitals
@@ -223,13 +230,13 @@ const HeroSection: React.FC = () => {
               </motion.div>
             </motion.div>
 
-            {/* Hero Headline - Mobile Optimized */}
+            {/* Hero Headline - Centered */}
             <motion.div
-              className="space-y-4 md:space-y-6 text-center lg:text-left"
+              className="space-y-4 md:space-y-6"
               variants={itemVariants}
             >
               <motion.h1
-                className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 leading-[1.1]"
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 leading-[1.1]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
@@ -244,7 +251,7 @@ const HeroSection: React.FC = () => {
                   Reliable Healthcare
                 </motion.span>
                 <motion.span
-                  className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-slate-700 font-medium"
+                  className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-slate-700 font-medium"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.9, duration: 0.8 }}
@@ -253,7 +260,7 @@ const HeroSection: React.FC = () => {
                 </motion.span>
               </motion.h1>
               <motion.p
-                className="text-base md:text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0 font-light"
+                className="text-lg md:text-xl lg:text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.1, duration: 0.8 }}
@@ -263,9 +270,9 @@ const HeroSection: React.FC = () => {
               </motion.p>
             </motion.div>
 
-            {/* Premium CTA Buttons - Mobile Optimized */}
+            {/* Premium CTA Buttons - Centered */}
             <motion.div
-              className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center lg:justify-start"
+              className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center"
               variants={itemVariants}
             >
               <motion.div
@@ -276,17 +283,16 @@ const HeroSection: React.FC = () => {
                 <Link href="/login">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#00A733] to-[#4C9F4D] hover:from-[#4C9F4D] hover:to-[#00A733] text-white px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl hover:shadow-2xl hover:shadow-[#E5F2E5]/50 group w-full sm:w-auto"
+                  className="bg-gradient-to-r from-[#00A733] to-[#4C9F4D] hover:from-[#4C9F4D] hover:to-[#00A733] text-white px-8 md:px-10 lg:px-12 py-4 md:py-5 rounded-xl hover:shadow-2xl hover:shadow-[#E5F2E5]/50 group w-full sm:w-auto"
                 >
-                  <span className="text-base md:text-lg font-semibold">
-                    {/* Download App */}
+                  <span className="text-lg md:text-xl font-semibold">
                     Book a Doctor
                   </span>
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
-                    <ArrowRight className="ml-2 md:ml-3 w-5 h-5 md:w-6 md:h-6" />
+                    <ArrowRight className="ml-3 md:ml-4 w-6 h-6 md:w-7 md:h-7" />
                   </motion.div>
                 </Button>
                 </Link>
@@ -299,25 +305,25 @@ const HeroSection: React.FC = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl backdrop-blur-sm w-full sm:w-auto"
+                  className="border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-8 md:px-10 lg:px-12 py-4 md:py-5 rounded-xl backdrop-blur-sm w-full sm:w-auto"
                 >
-                  <span className="text-base md:text-lg font-medium">
+                  <span className="text-lg md:text-xl font-medium">
                     Watch Demo
                   </span>
                 </Button>
               </motion.div>
             </motion.div>
 
-            {/* Premium Social Proof - Mobile Grid */}
+            {/* Premium Social Proof - Centered */}
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 lg:gap-6 pt-2 md:pt-4 max-w-lg mx-auto lg:max-w-none lg:mx-0"
+              className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-8 pt-8 md:pt-12"
               variants={itemVariants}
             >
               <motion.div
-                className="flex items-center justify-center lg:justify-start space-x-2 md:space-x-3 bg-white/50 backdrop-blur-sm rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-white/20 shadow-lg"
+                className="flex items-center space-x-3 md:space-x-4 bg-white/60 backdrop-blur-sm rounded-xl md:rounded-2xl px-6 md:px-8 py-4 md:py-5 border border-white/30 shadow-lg"
                 whileHover={{
                   scale: 1.05,
-                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
                 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -329,166 +335,52 @@ const HeroSection: React.FC = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 1.3 + i * 0.1, duration: 0.3 }}
                     >
-                      <Star className="w-3 h-3 md:w-4 md:h-4 text-amber-400 fill-current" />
+                      <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-400 fill-current" />
                     </motion.div>
                   ))}
                 </div>
                 <div>
-                  <span className="font-bold text-slate-900 text-sm md:text-base lg:text-lg">
+                  <span className="font-bold text-slate-900 text-lg md:text-xl">
                     4.9
                   </span>
-                  <p className="text-xs md:text-sm text-slate-600">Store</p>
+                  <p className="text-sm md:text-base text-slate-600">Store Rating</p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="flex items-center justify-center lg:justify-start space-x-2 md:space-x-3 bg-white/50 backdrop-blur-sm rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-white/20 shadow-lg"
+                className="flex items-center space-x-3 md:space-x-4 bg-white/60 backdrop-blur-sm rounded-xl md:rounded-2xl px-6 md:px-8 py-4 md:py-5 border border-white/30 shadow-lg"
                 whileHover={{
                   scale: 1.05,
-                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
                 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Users className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-emerald-600" />
+                <Users className="w-6 h-6 md:w-7 md:h-7 text-emerald-600" />
                 <div>
-                  <span className="font-bold text-slate-900 text-sm md:text-base lg:text-lg">
+                  <span className="font-bold text-slate-900 text-lg md:text-xl">
                     250K+
                   </span>
-                  <p className="text-xs md:text-sm text-slate-600">Users</p>
+                  <p className="text-sm md:text-base text-slate-600">Active Users</p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="flex items-center justify-center lg:justify-start space-x-2 md:space-x-3 bg-white/50 backdrop-blur-sm rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 border border-white/20 shadow-lg"
+                className="flex items-center space-x-3 md:space-x-4 bg-white/60 backdrop-blur-sm rounded-xl md:rounded-2xl px-6 md:px-8 py-4 md:py-5 border border-white/30 shadow-lg"
                 whileHover={{
                   scale: 1.05,
-                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
                 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Shield className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-blue-600" />
+                <Shield className="w-6 h-6 md:w-7 md:h-7 text-blue-600" />
                 <div>
-                  <span className="font-bold text-slate-900 text-sm md:text-base lg:text-lg">
+                  <span className="font-bold text-slate-900 text-lg md:text-xl">
                     100%
                   </span>
-                  <p className="text-xs md:text-sm text-slate-600">Secure</p>
+                  <p className="text-sm md:text-base text-slate-700">Secure Platform</p>
                 </div>
               </motion.div>
             </motion.div>
-          </motion.div>
-
-          {/* Right Side - App Mockup Mobile Optimized */}
-          <motion.div
-            className="relative order-1 lg:order-2 flex justify-center"
-            variants={slideInRight}
-          >
-            {/* Main Phone Container - Responsive */}
-            <motion.div
-              className="relative w-64 h-80 md:w-80 md:h-96 lg:w-96 lg:h-[500px] bg-gradient-to-br from-white via-slate-50 to-emerald-50/50 rounded-2xl md:rounded-[3rem] p-4 md:p-6 lg:p-8 flex items-center justify-center shadow-xl md:shadow-2xl shadow-slate-900/10 border border-white/20 backdrop-blur-sm"
-              whileHover={{ scale: 1.02, rotateY: 5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              {/* Phone Screen Glow */}
-              <motion.div
-                className="absolute inset-2 md:inset-4 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 rounded-xl md:rounded-[2.5rem]"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-
-             <HeroMockupCarousel />
-
-              {/* Premium Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10 rounded-2xl md:rounded-[3rem] pointer-events-none"></div>
-            </motion.div>
-
-            {/* Floating Cards - Responsive and Fewer on Mobile */}
-            <motion.div
-              className="hidden sm:block absolute -top-4 md:-top-6 -left-2 md:-left-6 bg-white/80 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-xl md:shadow-2xl shadow-emerald-500/10 p-2 md:p-4 border border-white/30"
-              variants={floatingVariants}
-              animate="animate"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              <div className="flex items-center space-x-2 md:space-x-3">
-                <div className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center">
-                  <Calendar className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-xs md:text-sm font-semibold text-slate-900">
-                    Available
-                  </p>
-                  <p className="text-xs text-slate-600 hidden md:block">
-                    Dr. Sarah
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="hidden sm:block absolute -bottom-4 md:-bottom-6 -right-2 md:-right-6 bg-white/80 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-xl md:shadow-2xl shadow-emerald-500/10 p-2 md:p-4 border border-white/30"
-              variants={floatingVariants}
-              animate="animate"
-              whileHover={{ scale: 1.1, rotate: -5 }}
-            >
-              <div className="flex items-center space-x-2 md:space-x-3">
-                <div className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg md:rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-xs md:text-sm font-semibold text-slate-900">
-                    Booked
-                  </p>
-                  <p className="text-xs text-slate-600 hidden md:block">
-                    2 mins ago
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Third floating card - Only on larger screens */}
-            <motion.div
-              className="hidden lg:block absolute top-1/2 -left-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-blue-500/10 p-4 border border-white/30"
-              variants={floatingVariants}
-              animate="animate"
-              whileHover={{ scale: 1.1, rotate: 3 }}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    Quick Booking
-                  </p>
-                  <p className="text-xs text-slate-600">Under 30s</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Background Decorative Elements - Hidden on mobile */}
-            <motion.div
-              className="hidden md:block absolute -z-10 top-10 right-10 w-32 h-32 lg:w-64 lg:h-64 bg-gradient-to-br from-emerald-200/20 to-blue-200/20 rounded-full blur-3xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 180, 360],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            <motion.div
-              className="hidden md:block absolute -z-10 bottom-10 left-10 w-24 h-24 lg:w-48 lg:h-48 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"
-              animate={{
-                scale: [1.2, 1, 1.2],
-                rotate: [360, 180, 0],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
           </motion.div>
         </motion.div>
       </div>

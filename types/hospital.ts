@@ -1,5 +1,6 @@
-// types/hospital.ts
-export type Specialty = "Cardiology" | "Neurology" | "Pediatrics" | "Orthopedics";
+import { ReactNode } from "react";
+
+export type Specialty = "All" | "Cardiology" | "Neurology" | "Pediatrics" | "Orthopedics";
 
 export interface Doctor {
   id: string;

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Doctor, Hospital } from "@/types/hospital";
 import DoctorProfile from "@/components/DoctorProfile";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "@/components/SideNavigation";
 import { decryptId } from "@/lib/cryptoUtils";
 
 const DoctorProfilePage = () => {
@@ -45,11 +45,15 @@ const DoctorProfilePage = () => {
         const { apiClient } = require("../../../../../lib/apiClient");
 
         // Fetch the specific doctor
-        const doctorResponse = await apiClient.get(`/doctors/${decryptedDoctorId}`);
+        const doctorResponse = await apiClient.get(
+          `/doctors/${decryptedDoctorId}`
+        );
         setDoctor(doctorResponse.doctor || null);
 
         // Fetch the hospital details
-        const hospitalResponse = await apiClient.get(`/hospitals/${decryptedHospitalId}`);
+        const hospitalResponse = await apiClient.get(
+          `/hospitals/${decryptedHospitalId}`
+        );
         setHospital(hospitalResponse.hospital || null);
       } catch (err) {
         console.error("Failed to load profile:", err);

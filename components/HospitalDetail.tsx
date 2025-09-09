@@ -3,9 +3,8 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Hospital, Doctor } from "@/types/hospital";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "@/components/SideNavigation";
 import { encryptId } from "@/lib/cryptoUtils";
-
 
 interface HospitalDetailProps {
   hospital: Hospital;
@@ -14,7 +13,7 @@ interface HospitalDetailProps {
 
 const HospitalDetail: React.FC<HospitalDetailProps> = ({
   hospital,
-  onDoctorSelect
+  onDoctorSelect,
 }) => {
   const router = useRouter();
   const [doctors, setDoctors] = React.useState<Doctor[]>([]);
@@ -27,7 +26,9 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
       setDoctorError("");
       try {
         const { apiClient } = require("../lib/apiClient");
-        const response = await apiClient.get(`/doctors?hospital=${hospital.id}`);
+        const response = await apiClient.get(
+          `/doctors?hospital=${hospital.id}`
+        );
         if (response && response.doctors) {
           setDoctors(response.doctors);
         } else {
@@ -61,7 +62,6 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
     const query = encodeURIComponent(hospital.address.city);
     window.open(`https://maps.google.com/?q=${query}`, "_blank");
   };
- 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -98,7 +98,6 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
           alt={hospital.name}
           className="w-full h-full object-cover"
         />
-        
       </div>
 
       {/* Hospital Info */}
@@ -114,7 +113,9 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-sm">{hospital.address.city}, {hospital.address.state}</span>
+          <span className="text-sm">
+            {hospital.address.city}, {hospital.address.state}
+          </span>
         </div>
 
         {/* Action Buttons */}
@@ -182,7 +183,9 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span className="text-sm font-medium text-green-600">Directions</span>
+            <span className="text-sm font-medium text-green-600">
+              Directions
+            </span>
           </button>
         </div>
 
@@ -203,20 +206,22 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
           </div>
         </div>
 
-       {/* Doctors Section */}
-<div className="mb-6">
-  <div className="flex justify-between items-center mb-4">
-    <h3 className="text-lg font-semibold text-gray-900">Doctors</h3>
-    <button
-      onClick={() => {
-        const encryptedHospitalId = encodeURIComponent(encryptId(hospital.id));
-        router.push(`/Hospital/${encryptedHospitalId}/doctors`);
-      }}
-      className="text-green-600 text-sm font-medium"
-    >
-      See All
-    </button>
-  </div>
+        {/* Doctors Section */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Doctors</h3>
+            <button
+              onClick={() => {
+                const encryptedHospitalId = encodeURIComponent(
+                  encryptId(hospital.id)
+                );
+                router.push(`/Hospital/${encryptedHospitalId}/doctors`);
+              }}
+              className="text-green-600 text-sm font-medium"
+            >
+              See All
+            </button>
+          </div>
 
           {isLoadingDoctors ? (
             <div>Loading doctors...</div>
@@ -224,25 +229,31 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
             <div>Error: {doctorError}</div>
           ) : doctors.length > 0 ? (
             <div className="space-y-4">
-             {doctors
-  .filter(
-    (doctor) =>
-      typeof doctor.hospital === "object" &&
-      doctor.hospital.id === String(hospital.id)
-  )
-  .slice(0, 2)
-  .map((doctor) => (
-    <div
-      key={doctor.id}
-      onClick={() => {
-        const encryptedHospitalId = encodeURIComponent(encryptId(hospital.id));
-        const encryptedDoctorId = encodeURIComponent(encryptId(doctor.id));
-        router.push(`/Hospital/${encryptedHospitalId}/doctors/${encryptedDoctorId}`);
-      }}
-      className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-    >
-      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-        {doctor.profileImage ? (
+              {doctors
+                .filter(
+                  (doctor) =>
+                    typeof doctor.hospital === "object" &&
+                    doctor.hospital.id === String(hospital.id)
+                )
+                .slice(0, 2)
+                .map((doctor) => (
+                  <div
+                    key={doctor.id}
+                    onClick={() => {
+                      const encryptedHospitalId = encodeURIComponent(
+                        encryptId(hospital.id)
+                      );
+                      const encryptedDoctorId = encodeURIComponent(
+                        encryptId(doctor.id)
+                      );
+                      router.push(
+                        `/Hospital/${encryptedHospitalId}/doctors/${encryptedDoctorId}`
+                      );
+                    }}
+                    className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                      {doctor.profileImage ? (
                         <img
                           src={doctor.profileImage}
                           alt={doctor.name}
@@ -265,8 +276,12 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
                       )}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{doctor.name}</h4>
-                      <p className="text-sm text-gray-600">{doctor.specialization}</p>
+                      <h4 className="font-medium text-gray-900">
+                        {doctor.name}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {doctor.specialization}
+                      </p>
                       <div className="flex items-center mt-1">
                         <svg
                           className="w-4 h-4 text-yellow-400 mr-1"
