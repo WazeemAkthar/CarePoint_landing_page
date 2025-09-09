@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react"; 
+import { Eye, EyeOff, User, Mail, Phone, Lock, Heart } from "lucide-react";
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -17,8 +17,8 @@ const SignUpPage = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 👈 toggle state for password
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 👈 toggle state for confirm password
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -64,147 +64,229 @@ const SignUpPage = () => {
     }
   };
 
-  
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-green-600 rounded-full flex items-center justify-center">
-            <svg
-              className="h-6 w-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-teal-50 flex flex-col">
+      {/* Header with brand */}
+      <div className="w-full px-4 pt-8 pb-4">
+        <div className="flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <Heart className="w-5 h-5 text-white" fill="currentColor" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                CarePoint
+              </h1>
+              <p className="text-xs text-gray-500 font-medium">Healthcare Platform</p>
+            </div>
           </div>
-          <h2 className="mt-6 text-2xl font-bold text-gray-900">
-            Create Your Account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-green-600 hover:text-green-500"
-            >
-              Sign in
-            </Link>
-          </p>
         </div>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              value={formData.fullName}
-              onChange={handleInputChange}
-              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              placeholder="Full Name"
-            />
-
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="off"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              placeholder="Email Address"
-            />
-
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              autoComplete="on"
-              required
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              placeholder="Phone Number"
-              
-            />
-
-            {/* Password field with eye toggle */}
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                placeholder="Password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-              >
-                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-              </button>
-            </div>
-
-            {/* Confirm Password field with eye toggle */}
-            <div className="relative">
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                required
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                placeholder="Confirm Password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-8">
+        <div className="w-full max-w-sm">
+          {/* Welcome Section */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Join CarePoint
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Create your account to start booking appointments and managing your health with trusted providers
+            </p>
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-              {error}
-            </div>
-          )}
+          {/* Signup Form Card */}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Full Name Input */}
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 block">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Sign Up"}
-            </button>
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="off"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
+
+              {/* Phone Input */}
+              <div className="space-y-2">
+                <label htmlFor="phone" className="text-sm font-medium text-gray-700 block">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="on"
+                    required
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-gray-700 block">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-12 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Create a password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Input */}
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 block">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-12 py-3.5 bg-gray-50/50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all duration-200"
+                    placeholder="Confirm your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center space-x-2">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-6"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Creating account...</span>
+                  </>
+                ) : (
+                  <span>Create CarePoint Account</span>
+                )}
+              </button>
+
+              {/* Terms & Privacy */}
+              <p className="text-xs text-gray-500 text-center mt-4 leading-relaxed">
+                By creating an account, you agree to our{" "}
+                <Link href="/terms" className="text-green-600 hover:text-green-700 font-medium">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-green-600 hover:text-green-700 font-medium">
+                  Privacy Policy
+                </Link>
+              </p>
+            </form>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          {/* Sign In Link */}
+          <div className="text-center mt-6 px-4">
+            <p className="text-gray-600 text-sm">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-green-600 hover:text-green-700 font-semibold transition-colors"
+              >
+                Sign in instead
+              </Link>
+            </p>
+          </div>
+
+          {/* Back to Home */}
+          <div className="text-center mt-4">
             <Link
               href="/"
-              className="text-sm font-medium text-green-600 hover:text-green-500"
+              className="text-xs text-gray-500 hover:text-gray-700 transition-colors inline-flex items-center space-x-1"
             >
-              Back to Home
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Home</span>
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

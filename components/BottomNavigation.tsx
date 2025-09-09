@@ -1,8 +1,8 @@
-// components/BottomNavigation.tsx
+// components/SideNavigation.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Calendar, Hospital, HeartPulse, User } from 'lucide-react';
+import { Calendar, Hospital, HeartPulse, User, Menu, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 type NavItem = {
@@ -12,19 +12,18 @@ type NavItem = {
   path: string;
 };
 
-interface BottomNavigationProps {
+interface SideNavigationProps {
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({
+const SideNavigation: React.FC<SideNavigationProps> = ({
   activeTab,
   onTabChange
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -53,47 +52,37 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     }
   ];
 
+  // Close sidebar when clicking outside on mobile
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const handleScroll = () => {
-      // Show navigation when scrolling (either direction)
-      setIsVisible(true);
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.getElementById('mobile-sidebar');
+      const menuButton = document.getElementById('menu-button');
       
-      // Clear existing timeout
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (isOpen && sidebar && menuButton && 
+          !sidebar.contains(event.target as Node) && 
+          !menuButton.contains(event.target as Node)) {
+        setIsOpen(false);
       }
-      
-      // Hide after 2 seconds of no scrolling
-      timeoutId = setTimeout(() => {
-        if (!isHovered) {
-          setIsVisible(false);
-        }
-      }, 2000);
     };
 
-    // Add scroll listener to window for global scroll detection
-    const handleWindowScroll = () => {
-      handleScroll();
-    };
-
-    // Add scroll listener to document body as well
-    const handleDocumentScroll = () => {
-      handleScroll();
-    };
-
-    window.addEventListener('scroll', handleWindowScroll, { passive: true });
-    document.addEventListener('scroll', handleDocumentScroll, { passive: true });
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      // Prevent body scroll when sidebar is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
 
     return () => {
-      window.removeEventListener('scroll', handleWindowScroll);
-      document.removeEventListener('scroll', handleDocumentScroll);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = '';
     };
-  }, [isHovered]);
+  }, [isOpen]);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   const handleTabClick = (item: NavItem) => {
     // Call the onTabChange callback if provided
@@ -101,6 +90,9 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     
     // Navigate to the page
     router.push(item.path);
+    
+    // Close sidebar on mobile after navigation
+    setIsOpen(false);
   };
 
   const isActiveTab = (item: NavItem): boolean => {
@@ -113,96 +105,149 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
     return pathname === item.path;
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    setIsVisible(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
-
   return (
-    <div 
-      className={`fixed bottom-0 left-0 right-0 safe-area-pb z-50 transition-all duration-300 ease-in-out ${
-        isVisible || isHovered ? "translate-y-0" : "translate-y-full"
-      }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Glass morphism background with subtle gradient */}
-      <div className="relative">
-        {/* Background blur layer */}
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-lg border-t border-gray-200/50" />
-        
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
-        
-        {/* Active tab indicator background */}
-        <div className="relative px-4 py-3">
-          <div className="flex justify-around items-center mx-auto">
-            {navItems.map((item, index) => {
-              const IconComponent = item.icon;
-              const isActive = isActiveTab(item);
-              
-              return (
-                <div key={item.id} className="relative md:flex-none flex-1 flex justify-center">
-                  {/* Active tab background indicator */}
-                  {isActive && (
-                    <div className="absolute inset-0 bg-green-50 rounded-2xl scale-110 transition-all duration-300 ease-out shadow-lg" />
-                  )}
-                  
-                  <button
-                    onClick={() => handleTabClick(item)}
-                    className={`relative flex flex-col items-center py-2 px-4 rounded-2xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2 focus:ring-offset-white/50 ${
-                      isActive
-                        ? "text-green-600 transform scale-105"
-                        : "text-gray-500 hover:text-gray-700 hover:scale-102 hover:bg-gray-50/50"
-                    }`}
-                    aria-pressed={isActive}
-                    aria-label={`Navigate to ${item.label}`}
-                  >
-                    {/* Icon container with enhanced styling */}
-                    <div className={`relative p-1 rounded-xl transition-all duration-300 ${
-                      isActive 
-                        ? "bg-green-100/70 shadow-sm" 
-                        : "hover:bg-gray-100/50"
-                    }`}>
-                      <IconComponent 
-                        className={`w-6 h-6 transition-all duration-300 ${
-                          isActive 
-                            ? 'text-green-600 drop-shadow-sm' 
-                            : 'text-gray-500'
-                        }`}
-                        strokeWidth={isActive ? 2.5 : 2}
-                      />
-                      
-                      {/* Active indicator dot */}
-                      {isActive && (
-                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full shadow-sm animate-pulse" />
-                      )}
-                    </div>
-                    
-                    {/* Enhanced label styling */}
-                    <span className={`text-xs mt-1.5 transition-all duration-300 ${
-                      isActive 
-                        ? "font-semibold text-green-600 drop-shadow-sm" 
-                        : "font-medium text-gray-500"
-                    }`}>
-                      {item.label}
-                    </span>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+    <>
+      {/* Mobile Menu Button - Fixed position */}
+      <button
+        id="menu-button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-4 left-4 z-[60] lg:hidden bg-white/90 backdrop-blur-lg border border-gray-200/50 rounded-xl p-3 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/30"
+        aria-label={isOpen ? "Close menu" : "Open menu"}
+      >
+        {isOpen ? (
+          <X className="w-6 h-6 text-gray-700" strokeWidth={2} />
+        ) : (
+          <Menu className="w-6 h-6 text-gray-700" strokeWidth={2} />
+        )}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        id="mobile-sidebar"
+        className={`fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        {/* Glass morphism background */}
+        <div className="relative h-full w-72 md:w-80">
+          {/* Background blur layer */}
+          <div className="absolute inset-0 bg-white/85 backdrop-blur-xl border-r border-gray-200/50" />
           
-          {/* Bottom accent line */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full" />
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent" />
+          
+          {/* Content */}
+          <div className="relative h-full flex flex-col">
+            {/* Header */}
+            <div className="p-6 border-b border-gray-200/30">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800 mb-1">Navigation</h2>
+                  <p className="text-sm text-gray-500">Quick access to your health tools</p>
+                </div>
+                {/* Close button for mobile */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="lg:hidden p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
+                  aria-label="Close sidebar"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+            </div>
+
+            {/* Navigation Items */}
+            <nav className="flex-1 p-4">
+              <div className="space-y-2">
+                {navItems.map((item, index) => {
+                  const IconComponent = item.icon;
+                  const isActive = isActiveTab(item);
+                  
+                  return (
+                    <div key={item.id} className="relative">
+                      {/* Active tab background indicator */}
+                      {isActive && (
+                        <div className="absolute inset-0 bg-green-50/80 rounded-xl shadow-sm" />
+                      )}
+                      
+                      <button
+                        onClick={() => handleTabClick(item)}
+                        className={`relative w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2 focus:ring-offset-white/50 ${
+                          isActive
+                            ? "text-green-600 transform scale-[1.02] shadow-sm"
+                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-50/60 hover:scale-[1.01]"
+                        }`}
+                        aria-pressed={isActive}
+                        aria-label={`Navigate to ${item.label}`}
+                      >
+                        {/* Icon container */}
+                        <div className={`relative p-2.5 rounded-lg transition-all duration-300 ${
+                          isActive 
+                            ? "bg-green-100/80 shadow-sm ring-2 ring-green-500/20" 
+                            : "bg-gray-50/60 hover:bg-gray-100/60"
+                        }`}>
+                          <IconComponent 
+                            className={`w-6 h-6 transition-all duration-300 ${
+                              isActive 
+                                ? 'text-green-600 drop-shadow-sm' 
+                                : 'text-gray-600'
+                            }`}
+                            strokeWidth={isActive ? 2.5 : 2}
+                          />
+                          
+                          {/* Active indicator dot */}
+                          {isActive && (
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full shadow-sm animate-pulse ring-2 ring-white" />
+                          )}
+                        </div>
+                        
+                        {/* Label */}
+                        <div className="flex-1 text-left">
+                          <span className={`block text-base transition-all duration-300 ${
+                            isActive 
+                              ? "font-semibold text-green-600 drop-shadow-sm" 
+                              : "font-medium text-gray-600"
+                          }`}>
+                            {item.label}
+                          </span>
+                          {isActive && (
+                            <span className="text-xs text-green-500 font-medium mt-0.5 block">
+                              Currently active
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Arrow indicator for active state */}
+                        {isActive && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full shadow-sm" />
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </nav>
+
+            {/* Footer accent */}
+            <div className="p-4 border-t border-gray-200/30">
+              <div className="w-16 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mx-auto" />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </aside>
+
+      {/* Spacer for desktop to prevent content overlap */}
+      <div className="hidden lg:block w-72 xl:w-80 flex-shrink-0" />
+    </>
   );
 };
 
-export default BottomNavigation;
+export default SideNavigation;
