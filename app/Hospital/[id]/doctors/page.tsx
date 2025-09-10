@@ -5,6 +5,7 @@ import { Doctor } from "@/types/hospital";
 import BottomNavigation from "@/components/SideNavigation";
 import { decryptId } from "@/lib/cryptoUtils";
 import { encryptId } from "@/lib/cryptoUtils";
+import ConditionalSidebar from "@/components/ConditionalSidebar";
 
 const AllDoctorsPage: React.FC = () => {
   const router = useRouter();
@@ -66,6 +67,7 @@ const AllDoctorsPage: React.FC = () => {
   };
 
   return (
+    <ConditionalSidebar>
     <div className="min-h-screen bg-gray-50">
       <div className="bg-green-600 text-white">
         <div className="flex items-center px-4 py-4">
@@ -157,11 +159,8 @@ const AllDoctorsPage: React.FC = () => {
           </div>
         )}
       </div>
-
-      <div className="pb-20">
-        <BottomNavigation activeTab="hospitals" />
-      </div>
     </div>
+    </ConditionalSidebar>
   );
 };
 

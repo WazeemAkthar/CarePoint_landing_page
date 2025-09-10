@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Hospital, Doctor } from "@/types/hospital";
 import BottomNavigation from "@/components/SideNavigation";
 import { encryptId } from "@/lib/cryptoUtils";
+import ConditionalSidebar from "./ConditionalSidebar";
 
 interface HospitalDetailProps {
   hospital: Hospital;
@@ -64,6 +65,7 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
   };
 
   return (
+    <ConditionalSidebar>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-green-600 text-white">
@@ -350,12 +352,8 @@ const HospitalDetail: React.FC<HospitalDetailProps> = ({
           </button>
         )}
       </div>
-
-      {/* Bottom Navigation */}
-      <div className="pb-20">
-        <BottomNavigation activeTab="hospitals" />
-      </div>
     </div>
+    </ConditionalSidebar>
   );
 };
 

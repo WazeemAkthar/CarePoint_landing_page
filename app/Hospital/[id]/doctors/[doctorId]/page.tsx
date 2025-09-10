@@ -6,6 +6,7 @@ import { Doctor, Hospital } from "@/types/hospital";
 import DoctorProfile from "@/components/DoctorProfile";
 import BottomNavigation from "@/components/SideNavigation";
 import { decryptId } from "@/lib/cryptoUtils";
+import ConditionalSidebar from "@/components/ConditionalSidebar";
 
 const DoctorProfilePage = () => {
   const params = useParams();
@@ -79,12 +80,9 @@ const DoctorProfilePage = () => {
   }
 
   return (
-    <>
+    <ConditionalSidebar>
       <DoctorProfile doctor={doctor} hospital={hospital} />
-      <div className="pb-20">
-        <BottomNavigation activeTab="hospitals" />
-      </div>
-    </>
+    </ConditionalSidebar>
   );
 };
 

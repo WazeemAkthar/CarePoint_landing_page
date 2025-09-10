@@ -239,7 +239,7 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
               
-              <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="flex gap-3 overflow-x-auto py-4 px-1 scrollbar-hide">
                 {/* All Button */}
                 <button
                   onClick={() => setSelectedSpecialty('All')}
