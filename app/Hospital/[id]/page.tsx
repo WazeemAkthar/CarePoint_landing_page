@@ -5,7 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import HospitalDetail from "@/components/HospitalDetail";
 import { Hospital } from "@/types/hospital";
 import { decryptId } from "@/lib/cryptoUtils";
-
+import ConditionalSidebar from "@/components/ConditionalSidebar";
+ 
 const HospitalPage: React.FC = () => {
   const params = useParams();
   const hospitalIdEncrypted = Array.isArray(params?.id) ? params.id[0] : params?.id;
@@ -57,6 +58,7 @@ const HospitalPage: React.FC = () => {
   }
 
   return (
+    <ConditionalSidebar>
     <HospitalDetail
       hospital={hospital}
       onDoctorSelect={(doctor) => {
@@ -64,6 +66,7 @@ const HospitalPage: React.FC = () => {
          router.push(`/Hospital/${hospitalIdEncrypted}/doctors/${doctor.id}`);
       }}
     />
+    </ConditionalSidebar>
   );
 };
 

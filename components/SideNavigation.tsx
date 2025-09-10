@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Calendar, Hospital, HeartPulse, User, Menu, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import Image from "next/image";
 
 type NavItem = {
   id: string;
@@ -142,7 +143,13 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
           {/* Logo/Brand Section - Compact */}
           <div className="h-16 flex items-center justify-center border-b border-gray-200/30">
             <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-400 rounded-xl flex items-center justify-center">
-              <HeartPulse className="w-6 h-6 text-white" strokeWidth={2.5} />
+              <Image
+                                alt="CarePoint Logo"
+                                width={24}
+                                height={24}
+                                className="w-5 h-5 lg:w-6 lg:h-6 text-white"
+                                src="/logo.png"
+                              />
             </div>
           </div>
 
