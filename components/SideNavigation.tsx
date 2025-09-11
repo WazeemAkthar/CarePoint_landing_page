@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Calendar, Hospital, HeartPulse, User, Menu, X } from 'lucide-react';
+import { Calendar, Hospital, HeartPulse, User, Menu, X, LogOut } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Image from "next/image";
 
@@ -96,6 +96,14 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
     setIsOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("user");
+    router.push("/login");
+    setIsOpen(false);
+  };
+
   const isActiveTab = (item: NavItem): boolean => {
     // If activeTab prop is provided, use it
     if (activeTab) {
@@ -112,7 +120,7 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
       <button
         id="menu-button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-[1000] lg:hidden bg-white/90 backdrop-blur-lg border border-gray-200/50 rounded-xl p-3 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/30 position-absolute"
+        className="fixed top-4 right-4 z-[1000] lg:hidden bg-white/90 backdrop-blur-lg border border-gray-200/50 rounded-xl p-3 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/30 position-absolute"
         aria-label={isOpen ? "Close menu" : "Open menu"}
       >
         {isOpen ? (
@@ -130,32 +138,43 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
         />
       )}
 
-      {/* Sidebar - Canva Style with Icon on Top, Text Below */}
+      {/* Sidebar - Mobile from right, Desktop from left */}
       <aside
         id="mobile-sidebar"
-        className={`fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        className={`fixed top-0 h-full z-50 transition-all duration-300 ease-out ${
+          // Mobile: slide from right, 70% width
+          // Desktop: slide from left, fixed width
+          isOpen 
+            ? "right-0 lg:left-0 lg:translate-x-0" 
+            : "right-0 translate-x-full lg:left-0 lg:translate-x-0"
+        } ${
+          // Mobile responsive width
+          "w-[70%] lg:w-24"
         }`}
       >
-        {/* Main Sidebar Container - Narrower like Canva */}
-        <div className="relative h-full w-20 lg:w-24 bg-white border-r border-gray-200/50 flex flex-col shadow-lg">
+        {/* Main Sidebar Container */}
+        <div className="relative h-full bg-white border-l border-gray-200/50 lg:border-l-0 lg:border-r lg:border-gray-200/50 flex flex-col shadow-lg">
           
-          {/* Logo/Brand Section - Compact */}
-          <div className="h-16 flex items-center justify-center border-b border-gray-200/30">
+          {/* Logo/Brand Section - Responsive */}
+          <div className="h-16 flex items-center lg:justify-center px-4 lg:px-0 border-b border-gray-200/30">
             <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-400 rounded-xl flex items-center justify-center">
               <Image
-                                alt="CarePoint Logo"
-                                width={24}
-                                height={24}
-                                className="w-5 h-5 lg:w-6 lg:h-6 text-white"
-                                src="/logo.png"
-                              />
+                alt="CarePoint Logo"
+                width={24}
+                height={24}
+                className="w-5 h-5 lg:w-6 lg:h-6 text-white"
+                src="/logo.png"
+              />
             </div>
+            {/* Brand text for mobile */}
+            <span className="ml-3 text-xl font-bold text-gray-800 lg:hidden">
+              CarePoint
+            </span>
           </div>
 
-          {/* Navigation Items - Vertical Stack with Icon on Top */}
-          <nav className="flex-1 px-2 py-6">
-            <div className="space-y-4">
+          {/* Navigation Items - Responsive Layout */}
+          <nav className="flex-1 px-2 lg:px-2 py-6">
+            <div className="space-y-4 lg:space-y-4">
               {navItems.map((item, index) => {
                 const IconComponent = item.icon;
                 const isActive = isActiveTab(item);
@@ -164,7 +183,7 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
                   <div key={item.id} className="relative">
                     <button
                       onClick={() => handleTabClick(item)}
-                      className={`w-full flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2 group ${
+                      className={`w-full flex items-center lg:flex-col lg:items-center gap-3 lg:gap-2 p-3 rounded-xl transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:ring-offset-2 group ${
                         isActive
                           ? "bg-green-50/80 text-green-600 shadow-sm"
                           : "text-gray-600 hover:text-gray-800 hover:bg-gray-50/60"
@@ -172,8 +191,8 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
                       aria-pressed={isActive}
                       aria-label={`Navigate to ${item.label}`}
                     >
-                      {/* Icon on Top */}
-                      <div className={`relative p-2 rounded-lg transition-all duration-300 ${
+                      {/* Icon - Responsive positioning */}
+                      <div className={`relative p-2 rounded-lg transition-all duration-300 flex-shrink-0 ${
                         isActive 
                           ? "bg-green-100/80 shadow-sm ring-2 ring-green-500/20" 
                           : "bg-gray-50/60 group-hover:bg-gray-100/60"
@@ -193,8 +212,8 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
                         )}
                       </div>
                       
-                      {/* Text Below Icon */}
-                      <span className={`text-xs font-medium text-center leading-tight transition-all duration-300 ${
+                      {/* Text - Responsive positioning */}
+                      <span className={`text-sm lg:text-xs font-medium lg:text-center lg:leading-tight transition-all duration-300 ${
                         isActive 
                           ? "text-green-600 drop-shadow-sm font-semibold" 
                           : "text-gray-600"
@@ -208,14 +227,20 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
             </div>
           </nav>
 
-          {/* Bottom Section - Compact User */}
+          {/* Bottom Section - Logout Button */}
           <div className="p-2 border-t border-gray-200/30">
-            <div className="flex flex-col items-center gap-2 p-2 rounded-xl hover:bg-gray-50/60 transition-colors duration-200 cursor-pointer">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-white" strokeWidth={2.5} />
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center lg:flex-col lg:items-center gap-3 lg:gap-2 p-3 rounded-xl hover:bg-red-50/60 text-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:ring-offset-2 group"
+              aria-label="Logout"
+            >
+              <div className="relative p-2 rounded-lg transition-all duration-300 flex-shrink-0 bg-red-50/60 group-hover:bg-red-100/60">
+                <LogOut className="w-5 h-5 text-red-600" strokeWidth={2} />
               </div>
-              <span className="text-xs text-gray-600 font-medium">Profile</span>
-            </div>
+              <span className="text-sm lg:text-xs text-red-600 font-medium lg:text-center lg:leading-tight">
+                Logout
+              </span>
+            </button>
           </div>
 
           {/* Close button for mobile - positioned at top right */}
@@ -229,7 +254,7 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
         </div>
       </aside>
 
-      {/* Spacer for desktop to prevent content overlap - Adjusted width */}
+      {/* Spacer for desktop to prevent content overlap */}
       <div className="hidden lg:block w-20 lg:w-24 flex-shrink-0" />
     </>
   );
