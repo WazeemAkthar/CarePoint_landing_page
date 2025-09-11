@@ -98,8 +98,6 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("user");
     router.push("/login");
     setIsOpen(false);
   };
@@ -228,7 +226,7 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
           </nav>
 
           {/* Bottom Section - Logout Button */}
-          {/* <div className="p-2 border-t border-gray-200/30">
+          <div className="p-2 border-t border-gray-200/30">
             <button
               onClick={handleLogout}
               className="w-full flex items-center lg:flex-col lg:items-center gap-3 lg:gap-2 p-3 rounded-xl hover:bg-red-50/60 text-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:ring-offset-2 group"
@@ -241,7 +239,7 @@ const SideNavigation: React.FC<SideNavigationProps> = ({
                 Logout
               </span>
             </button>
-          </div> */}
+          </div>
 
           {/* Close button for mobile - positioned at top right */}
           <button
