@@ -62,22 +62,24 @@ const BookingContent = () => {
       try {
         const { apiClient } = require("@/lib/apiClient");
         const response = await apiClient.get(`/appointments/${appointmentId}`);
-        if (response) {
+        // If backend wraps response: { success, message, appointment }
+        const appointment = (response as any)?.appointment || response;
+        if (appointment) {
           setBookingDetails({
-            appointmentId: response.id || response._id || appointmentId,
-            patientName: response.patientName || "",
-            doctorName: response.doctor || "Doctor",
-            specialization: response.specialization || "",
-            hospitalName: response.hospital || "",
-            hospitalAddress: response.hospitalAddress || "",
-            date: response.appointmentDate,
-            time: response.timeSlot,
-            phoneNumber: response.phone || "",
-            consultationFee: response.consultationFee || "",
-            paymentMethod: response.paymentMethod === "payAtHospital" ? "Pay at Hospital" : "Pay Online",
-            symptoms: response.symptoms || "",
-            bookingDate: response.createdAt ? new Date(response.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            bookingTime: response.createdAt ? new Date(response.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+            appointmentId: appointment.id || appointment._id || appointmentId,
+            patientName: appointment.patientName || "",
+            doctorName: appointment.doctor?.name || appointment.doctor || "Doctor",
+            specialization: appointment.doctor?.specialization || appointment.specialization || "",
+            hospitalName: appointment.hospital?.name || appointment.hospital || "",
+            hospitalAddress: appointment.hospital?.address?.city || appointment.hospitalAddress || "",
+            date: appointment.appointmentDate,
+            time: appointment.timeSlot,
+            phoneNumber: appointment.phone || "",
+            consultationFee: appointment.consultationFee || "",
+            paymentMethod: appointment.paymentMethod === "payAtHospital" ? "Pay at Hospital" : "Pay Online",
+            symptoms: appointment.symptoms || "",
+            bookingDate: appointment.createdAt ? new Date(appointment.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            bookingTime: appointment.createdAt ? new Date(appointment.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
           });
         } else {
           setBookingDetails(null);
