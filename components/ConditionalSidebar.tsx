@@ -29,7 +29,7 @@ const ConditionalSidebar: React.FC<ConditionalSidebarProps> = ({ children }) => 
   
   // Return content with sidebar layout
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 z-50">
       <SideNavigation activeTab={activeTab} />
       <main className="lg:ml-24 min-h-screen transition-all duration-300">
         <div className="pt-16 lg:pt-0 py-4 lg:py-6">
