@@ -2,13 +2,83 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Doctor, Hospital } from "@/types/hospital";
-import BottomNavigation from "@/components/SideNavigation";
+import ConditionalSidebar from "./ConditionalSidebar";
 
 interface DoctorProfileProps {
   doctor: Doctor;
   hospital: Hospital;
   onBookAppointment?: () => void;
 }
+
+// Skeleton Loader Component
+const DoctorProfileSkeleton = () => {
+  return (
+    <ConditionalSidebar>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header skeleton */}
+      <div className="bg-gradient-to-r from-green-500 to-green-600">
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center">
+            <div className="w-6 h-6 bg-white/20 rounded mr-3 animate-pulse"></div>
+            <div className="w-32 h-6 bg-white/20 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-6">
+        {/* Doctor Profile Section skeleton */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div className="flex flex-col items-center text-center mb-8">
+            {/* Profile image skeleton */}
+            <div className="w-24 h-24 bg-gray-200 rounded-full mb-4 animate-pulse"></div>
+            
+            {/* Name and specialization skeleton */}
+            <div className="w-48 h-8 bg-gray-200 rounded mb-2 animate-pulse"></div>
+            <div className="w-32 h-6 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+
+          {/* Stats skeleton */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="text-center p-5 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="w-10 h-10 bg-gray-200 rounded-full mx-auto mb-3 animate-pulse"></div>
+                <div className="w-12 h-6 bg-gray-200 rounded mb-1 mx-auto animate-pulse"></div>
+                <div className="w-16 h-4 bg-gray-200 rounded mx-auto animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Hospital Information skeleton */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+          <div className="w-20 h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center flex-1">
+              <div className="w-14 h-14 bg-gray-200 rounded-xl mr-4 animate-pulse"></div>
+              <div className="flex-1">
+                <div className="w-32 h-5 bg-gray-200 rounded mb-1 animate-pulse"></div>
+                <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+            <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Working Days skeleton */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
+          <div className="w-28 h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
+          <div className="w-64 h-5 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        {/* Book Appointment Button skeleton - Responsive */}
+        <div className="flex justify-center">
+          <div className="w-full max-w-xs h-12 bg-gray-200 rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+    </ConditionalSidebar>
+  );
+};
 
 const DoctorProfile: React.FC<DoctorProfileProps> = ({
   doctor,
@@ -24,9 +94,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
   const handleBookAppointment = () => {
     onBookAppointment?.();
     // Navigate to appointment booking page
-
     router.push(`/book-appointment?doctorId=${doctor.id}`);
-
     console.log("Book appointment for:", doctor.name);
   };
 
@@ -113,8 +181,12 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
                   </svg>
                 </div>
               </div>
-              <div className="text-xl font-bold text-gray-900 mb-1">1000+</div>
-              <div className="text-sm text-gray-500 font-medium">Patients</div>
+              <div className="text-xl font-bold text-gray-900 mb-1">
+                1000+
+              </div>
+              <div className="text-sm text-gray-500 font-medium">
+                Patients
+              </div>
             </div>
 
             <div className="text-center p-5 bg-gray-50 rounded-xl border border-gray-100">
@@ -165,7 +237,9 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
 
         {/* Enhanced Hospital Information */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Hospital</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Hospital
+          </h3>
           <div className="flex items-center justify-between">
             <div className="flex items-center flex-1">
               <div className="w-14 h-14 bg-gray-100 rounded-xl mr-4 overflow-hidden shadow-sm">
@@ -229,13 +303,10 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({
           Book Appointment
         </button>
       </div>
-
-      {/* Enhanced Bottom Navigation with proper spacing */}
-      <div className="pb-20">
-        <BottomNavigation activeTab="hospitals" />
-      </div>
     </div>
   );
 };
 
+// Export both components
 export default DoctorProfile;
+export { DoctorProfileSkeleton };

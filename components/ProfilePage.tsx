@@ -128,7 +128,6 @@ const ProfilePage: React.FC = () => {
   const handleSettingsItemClick = (item: SettingsItem) => {
     if (item.id === "3") {
       localStorage.removeItem("authToken");
-      alert("You have been logged out. Redirecting to login.");
       window.location.href = "/login";
       return;
     }
