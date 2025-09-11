@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, MapPin, Calendar, Clock, User, Phone, CreditCard, FileText, AlertCircle } from 'lucide-react';
 
@@ -47,41 +47,38 @@ const BookAppointmentForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Sample doctor data - in real app, fetch from API based on doctor ID
-  const [doctor] = useState<Doctor>({
-    "_id": "68b42b8ae906a3ce9ff29c0e",
-    "id": "1d1c88d9-46f8-4e43-985a-86f5d72f124d",
-    "name": "Dr. J.I.P. Herath",
-    "specialization": "Cardiology",
-    "hospital": {
-      "_id": "68b3f4deaafc575d82bb761d",
-      "id": "2d9b897f-f591-401c-809f-5e50b22f60c9",
-      "name": "Sri Jayewardenepura General Hospital (SJGH)",
-      "address": {
-        "street": "293 New Hospital Road",
-        "city": "Sri Jayewardenepura Kotte",
-        "state": "Western Province",
-        "zipCode": "10100",
-        "country": "Sri Lanka"
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [doctorLoading, setDoctorLoading] = useState<boolean>(true);
+  const [doctorError, setDoctorError] = useState<string>("");
+
+  useEffect(() => {
+    const doctorId = searchParams.get("doctorId");
+    if (!doctorId) {
+      setDoctorError("Missing doctor ID");
+      setDoctorLoading(false);
+      return;
+    }
+    const fetchDoctor = async () => {
+      setDoctorLoading(true);
+      setDoctorError("");
+      try {
+        const { apiClient } = require("@/lib/apiClient");
+        const response = await apiClient.get(`/doctors/${doctorId}`);
+        if (response && response.doctor) {
+          setDoctor(response.doctor);
+        } else {
+          setDoctor(null);
+          setDoctorError("Doctor not found");
+        }
+      } catch (err) {
+        setDoctorError("Failed to fetch doctor data");
+        setDoctor(null);
+      } finally {
+        setDoctorLoading(false);
       }
-    },
-    "email": "srigh@gmail.com",
-    "phone": "+94112778610",
-    "availableSlots": {
-      "Monday": ["01:00 PM"],
-      "Tuesday": ["12:20 PM", "01:00 PM"],
-      "Wednesday": [],
-      "Thursday": ["10:00 AM", "02:00 PM"],
-      "Friday": ["11:00 AM", "03:00 PM"],
-      "Saturday": ["09:00 AM"],
-      "Sunday": []
-    },
-    "consultationFee": "2000",
-    "status": "Active",
-    "createdAt": "2025-08-31T11:01:30.743Z",
-    "updatedAt": "2025-09-02T07:15:04.206Z",
-    "__v": 0
-  });
+    };
+    fetchDoctor();
+  }, [searchParams]);
 
   const [formData, setFormData] = useState<AppointmentForm>({
     patientName: '',
@@ -99,17 +96,14 @@ const BookAppointmentForm = () => {
   const getNextSevenDays = () => {
     const days = [];
     const today = new Date();
-    
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      
       const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
       const dayNumber = date.getDate();
       const monthName = date.toLocaleDateString('en-US', { month: 'short' });
       const fullDate = date.toISOString().split('T')[0];
       const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
-      
       days.push({
         dayName,
         dayNumber,
@@ -119,10 +113,8 @@ const BookAppointmentForm = () => {
         isToday: i === 0
       });
     }
-    
     return days;
   };
-
   const nextSevenDays = getNextSevenDays();
 
   const handleInputChange = (field: keyof AppointmentForm, value: string) => {
@@ -149,11 +141,9 @@ const BookAppointmentForm = () => {
   };
 
   const getAvailableTimesForSelectedDate = () => {
-    if (!formData.selectedDate) return [];
-    
+    if (!formData.selectedDate || !doctor) return [];
     const selectedDay = nextSevenDays.find(day => day.fullDate === formData.selectedDate);
     if (!selectedDay) return [];
-    
     return doctor.availableSlots[selectedDay.dayOfWeek] || [];
   };
 
@@ -182,26 +172,39 @@ const BookAppointmentForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleConfirmBooking = () => {
-    if (validateForm()) {
-      // Here you would typically make an API call to book the appointment
-      console.log('Booking appointment:', {
-        doctor: doctor.name,
-        patient: formData.patientName,
-        date: formData.selectedDate,
-        time: formData.selectedTime,
-        phone: formData.phoneNumber,
-        symptoms: formData.symptoms,
-        notes: formData.additionalNotes,
-        consultationFee: doctor.consultationFee
-      });
-      
-      // Navigate to success page or show success message
-      router.push(`/booking-success?patientName=${formData.patientName}&date=${formData.selectedDate}&time=${formData.selectedTime}&phone=${formData.phoneNumber}&symptoms=${formData.symptoms}`);
-    }
-  };
+ const handleConfirmBooking = () => {
+  if (!doctor) return;
+  if (validateForm()) {
+    const appointmentData = {
+      user: localStorage.getItem("userId"), // or from auth context
+      doctor: doctor.id,
+      hospital: doctor.hospital.id,
+      patientName: formData.patientName,
+      phone: formData.phoneNumber,
+      appointmentDate: formData.selectedDate,  // must be ISO string
+      timeSlot: formData.selectedTime,
+      symptoms: formData.symptoms,
+      additionalNotes: formData.additionalNotes,
+      paymentMethod: formData.paymentMethod === "pay-at-hospital" 
+        ? "payAtHospital" 
+        : "payOnline",
+    };
 
-  const hasRequiredFields = formData.patientName && formData.phoneNumber && formData.selectedDate && formData.selectedTime;
+    const bookAppointment = async () => {
+      try {
+        const { apiClient } = require("@/lib/apiClient");
+        await apiClient.post("/appointments", appointmentData);
+        router.push(`/booking-success?patientName=${formData.patientName}&date=${formData.selectedDate}&time=${formData.selectedTime}&phone=${formData.phoneNumber}&symptoms=${formData.symptoms}`);
+      } catch (err) {
+        alert("Failed to book appointment. Please try again.");
+      }
+    };
+    bookAppointment();
+  }
+};
+
+
+  const hasRequiredFields = doctor && formData.patientName && formData.phoneNumber && formData.selectedDate && formData.selectedTime;
 
   return (
     <>
@@ -218,27 +221,32 @@ const BookAppointmentForm = () => {
 
       <div className="px-4 py-6 space-y-6">
         {/* Doctor Info */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
-              <User className="w-8 h-8 text-green-600" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">{doctor.name}</h2>
-              <p className="text-green-600 font-medium mb-2">{doctor.specialization}</p>
-              
-              <div className="space-y-2">
-                <h3 className="font-medium text-gray-900">{doctor.hospital.name}</h3>
-                <div className="flex items-start space-x-2 text-gray-600">
-                  <MapPin size={16} className="mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">
-                    {doctor.hospital.address.city}, {doctor.hospital.address.state}
-                  </span>
+        {doctorLoading ? (
+          <div className="text-center py-8 text-gray-500">Loading doctor info...</div>
+        ) : doctorError ? (
+          <div className="text-center py-8 text-red-500">{doctorError}</div>
+        ) : doctor ? (
+          <div className="bg-white rounded-xl shadow-sm p-5">
+            <div className="flex items-start space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+                <User className="w-8 h-8 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-gray-900">{doctor.name}</h2>
+                <p className="text-green-600 font-medium mb-2">{doctor.specialization}</p>
+                <div className="space-y-2">
+                  <h3 className="font-medium text-gray-900">{doctor.hospital.name}</h3>
+                  <div className="flex items-start space-x-2 text-gray-600">
+                    <MapPin size={16} className="mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">
+                      {doctor.hospital.address.city}, {doctor.hospital.address.state}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : null}
 
         {/* Date Selection */}
         <div className="bg-white rounded-xl shadow-sm p-5">
@@ -454,12 +462,12 @@ const BookAppointmentForm = () => {
             <div className="space-y-3 text-sm">
               <div>
                 <span className="text-gray-600 block">DOCTOR</span>
-                <span className="font-medium text-gray-900">{doctor.name}</span>
+                <span className="font-medium text-gray-900">{doctor?.name}</span>
               </div>
               
               <div>
                 <span className="text-gray-600 block">HOSPITAL</span>
-                <span className="font-medium text-gray-900">{doctor.hospital.name}</span>
+                <span className="font-medium text-gray-900">{doctor?.hospital.name}</span>
               </div>
               
               <div>
@@ -486,7 +494,7 @@ const BookAppointmentForm = () => {
               
               <div>
                 <span className="text-gray-600 block">CONSULTATION FEE</span>
-                <span className="font-medium text-green-600">Rs {doctor.consultationFee}</span>
+                <span className="font-medium text-green-600">Rs {doctor?.consultationFee}</span>
               </div>
             </div>
           </div>
