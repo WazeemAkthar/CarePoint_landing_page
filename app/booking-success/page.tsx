@@ -51,34 +51,44 @@ const BookingContent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, you would fetch booking details from API using appointment ID
-    // For now, we'll use mock data or search params
-    const mockBookingDetails: BookingDetails = {
-      appointmentId: "APT-2025-000123",
-      patientName: searchParams.get('patientName') || "John Doe",
-      doctorName: "Dr. J.I.P. Herath",
-      specialization: "Cardiology",
-      hospitalName: "Sri Jayewardenepura General Hospital (SJGH)",
-      hospitalAddress: "Sri Jayewardenepura Kotte, Western Province",
-      date: searchParams.get('date') || "2025-09-05",
-      time: searchParams.get('time') || "02:00 PM",
-      phoneNumber: searchParams.get('phone') || "+94771234567",
-      consultationFee: "2000",
-      paymentMethod: "Pay at Hospital",
-      symptoms: searchParams.get('symptoms') || "",
-      bookingDate: new Date().toISOString().split('T')[0],
-      bookingTime: new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      })
-    };
-
-    // Simulate loading delay
-    setTimeout(() => {
-      setBookingDetails(mockBookingDetails);
+    const appointmentId = searchParams.get('appointmentId');
+    if (!appointmentId) {
       setIsLoading(false);
-    }, 1000);
+      setBookingDetails(null);
+      return;
+    }
+    const fetchBookingDetails = async () => {
+      setIsLoading(true);
+      try {
+        const { apiClient } = require("@/lib/apiClient");
+        const response = await apiClient.get(`/appointments/${appointmentId}`);
+        if (response) {
+          setBookingDetails({
+            appointmentId: response.id || response._id || appointmentId,
+            patientName: response.patientName || "",
+            doctorName: response.doctor || "Doctor",
+            specialization: response.specialization || "",
+            hospitalName: response.hospital || "",
+            hospitalAddress: response.hospitalAddress || "",
+            date: response.appointmentDate,
+            time: response.timeSlot,
+            phoneNumber: response.phone || "",
+            consultationFee: response.consultationFee || "",
+            paymentMethod: response.paymentMethod === "payAtHospital" ? "Pay at Hospital" : "Pay Online",
+            symptoms: response.symptoms || "",
+            bookingDate: response.createdAt ? new Date(response.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            bookingTime: response.createdAt ? new Date(response.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+          });
+        } else {
+          setBookingDetails(null);
+        }
+      } catch (err) {
+        setBookingDetails(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookingDetails();
   }, [searchParams]);
 
   const formatDate = (dateString: string) => {
