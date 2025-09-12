@@ -1,10 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ChevronLeft, Calendar, Clock, Phone, User } from 'lucide-react';
 
-const AppointmentConfirmation = () => {
+// Loading component for Suspense fallback
+const LoadingConfirmation = () => (
+  <div className="min-h-screen bg-gray-50">
+    <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-4 flex items-center shadow-lg">
+      <div className="mr-4 p-2 bg-green-600 rounded-full">
+        <ChevronLeft size={24} />
+      </div>
+      <h1 className="text-lg font-semibold">Loading...</h1>
+    </div>
+    <div className="px-4 py-6">
+      <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded mb-6"></div>
+          <div className="bg-green-50 rounded-xl p-4 space-y-3">
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Main component that uses useSearchParams
+const AppointmentConfirmationContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -74,6 +101,15 @@ const AppointmentConfirmation = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Main component wrapped with Suspense
+const AppointmentConfirmation = () => {
+  return (
+    <Suspense fallback={<LoadingConfirmation />}>
+      <AppointmentConfirmationContent />
+    </Suspense>
   );
 };
 
